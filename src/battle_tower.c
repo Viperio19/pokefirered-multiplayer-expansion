@@ -1623,7 +1623,11 @@ static bool8 IsSameRivalBattle(void) {
     u16 t1 = gBlockRecvBuffer[0][0];
     u16 t2 = gBlockRecvBuffer[1][0];
 
-    if (GetTrainerClassFromId(t1) == TRAINER_CLASS_RIVAL && GetTrainerClassFromId(t2) == TRAINER_CLASS_RIVAL && abs(t1 - t2) < 3) {
+    if ((GetTrainerClassFromId(t1) == TRAINER_CLASS_RIVAL_EARLY_FRLG
+     || GetTrainerClassFromId(t1) == TRAINER_CLASS_RIVAL_LATE_FRLG
+     || GetTrainerClassFromId(t1) == TRAINER_CLASS_CHAMPION_FRLG)
+     && GetTrainerClassFromId(t1) == GetTrainerClassFromId(t2)
+     && abs(t1 - t2) < 3) {
         return TRUE;
      }
 

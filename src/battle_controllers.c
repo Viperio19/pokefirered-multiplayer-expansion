@@ -92,7 +92,7 @@ bool32 BattlerIsRecorded(enum BattlerId battlerId)
 bool32 BattlerIsLink(enum BattlerId battlerId)
 {
     return (gBattlerBattleController[battlerId] == BATTLE_CONTROLLER_LINK_PARTNER
-         || gBattlerBattleController[battlerId] == BATTLE_CONTROLLER_LINK_OPPONENT);
+         || gBattlerBattleController[battlerId] == BATTLE_CONTROLLER_LINK_OPPONENT) && !(gBattleTypeFlags & BATTLE_TYPE_MULTIPLAYER);
 }
 
 bool32 BattlerIsWally(enum BattlerId battlerId)
