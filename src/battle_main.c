@@ -941,12 +941,7 @@ static void CB2_HandleStartBattle(void)
             ResetBlockReceivedFlags();
             FindLinkBattleMaster(2, playerMultiplayerId);
             SetAllPlayersBerryData();
-
-            if (gBattleTypeFlags & BATTLE_TYPE_MULTIPLAYER)
-                taskId = CreateTask(InitLinkMultiBattleVsScreen, 0);
-            else
-                taskId = CreateTask(InitLinkBattleVsScreen, 0);
-
+            taskId = CreateTask(InitLinkBattleVsScreen, 0);
             gTasks[taskId].data[1] = 0x10E;
             gTasks[taskId].data[2] = 0x5A;
             gTasks[taskId].data[5] = 0;
@@ -1160,7 +1155,12 @@ static void CB2_HandleStartMultiPartnerBattle(void)
             ResetBlockReceivedFlags();
             FindLinkBattleMaster(2, playerMultiplayerId);
             SetAllPlayersBerryData();
-            taskId = CreateTask(InitLinkBattleVsScreen, 0);
+
+            if (gBattleTypeFlags & BATTLE_TYPE_MULTIPLAYER)
+                taskId = CreateTask(InitLinkMultiBattleVsScreen, 0);
+            else
+                taskId = CreateTask(InitLinkBattleVsScreen, 0);
+
             gTasks[taskId].data[1] = 0x10E;
             gTasks[taskId].data[2] = 0x5A;
             gTasks[taskId].data[5] = 0;
