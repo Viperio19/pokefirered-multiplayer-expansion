@@ -1909,7 +1909,7 @@ void CustomTrainerPartyAssignMoves(struct Pokemon *mon, const struct TrainerMon 
         if (partyEntry->moves[j] != MOVE_NONE)
             noMoveSet = FALSE;
     }
-    if (noMoveSet)
+    if (noMoveSet || gSaveBlock2Ptr->randomizeTrainerPkmn != OPTIONS_RANDOM_NO)
     {
         GiveMonInitialMoveset(mon);
         // TODO: Figure out a default strategy when moves are not set, to generate a good moveset
@@ -3340,8 +3340,7 @@ u8 CreateNPCTrainerPartyFromTrainer(struct Pokemon *party, const struct Trainer 
             CreateMon(&party[i], species, partyData[monIndex].lvl, personalityValue, otId);
             SetMonData(&party[i], MON_DATA_HELD_ITEM, &partyData[monIndex].heldItem);
 
-            if (gSaveBlock2Ptr->randomizeTrainerPkmn == OPTIONS_RANDOM_NO)
-                CustomTrainerPartyAssignMoves(&party[i], &partyData[monIndex]);
+            CustomTrainerPartyAssignMoves(&party[i], &partyData[monIndex]);
             SetMonData(&party[i], MON_DATA_IVS, &(partyData[monIndex].iv));
             if (partyData[monIndex].ev != NULL)
             {
