@@ -596,6 +596,10 @@ void TryBattleLinkup(void)
             gLinkType = LINKTYPE_BATTLE_TOWER_OPEN;
 
         break;
+    case USING_LINK_MULTI:
+        minPlayers = 2;
+        gLinkType = LINKTYPE_LINK_MULTI;
+        break;
     }
 
     CreateLinkupTask(minPlayers, maxPlayers);
@@ -748,6 +752,9 @@ u8 CreateTask_ReestablishCableClubLink(void)
         break;
     case USING_RECORD_CORNER:
         gLinkType = LINKTYPE_RECORD_MIX_AFTER;
+        break;
+    case USING_LINK_MULTI:
+        gLinkType = LINKTYPE_LINK_MULTI;
         break;
     }
 

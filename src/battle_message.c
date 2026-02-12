@@ -899,6 +899,8 @@ const u8 *const gBattleStringsTable[STRINGID_COUNT] =
     [STRINGID_PKMNANGRY]                            = COMPOUND_STRING("{B_OPPONENT_MON1_NAME} is angry!"),
     [STRINGID_PKMNEATING]                           = COMPOUND_STRING("{B_OPPONENT_MON1_NAME} is eating!"),
     [STRINGID_PKMNDISGUISEWASBUSTED]                = COMPOUND_STRING("{B_SCR_NAME_WITH_PREFIX}'s disguise was busted!"),
+    [STRINGID_PKMNISLINKED]                         = COMPOUND_STRING("{B_ATK_NAME_WITH_PREFIX} is linked with {B_DEF_NAME_WITH_PREFIX}!"),
+    [STRINGID_LINKEDPKMNFAINTS]                     = COMPOUND_STRING("{B_BUFF1} is linked with {B_DEF_NAME_WITH_PREFIX} and fainted!"),
 };
 
 const u16 gTrainerUsedItemStringIds[] =
@@ -2398,7 +2400,14 @@ void BufferStringBattle(enum StringID stringID, enum BattlerId battler)
         {
             if (gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK))
             {
-                if (gBattleTypeFlags & BATTLE_TYPE_TOWER_LINK_MULTI)
+                if (gBattleTypeFlags & BATTLE_TYPE_MULTIPLAYER)
+                {
+                    if (TRAINER_BATTLE_PARAM.opponentB == 0xFFFF)
+                        stringPtr = sText_Trainer1WantsToBattle;
+                    else
+                        stringPtr = sText_TwoTrainersWantToBattle;
+                }
+                else if (gBattleTypeFlags & BATTLE_TYPE_TOWER_LINK_MULTI)
                 {
                     stringPtr = sText_TwoTrainersWantToBattle;
                 }
@@ -2522,7 +2531,9 @@ void BufferStringBattle(enum StringID stringID, enum BattlerId battler)
             }
             else
             {
-                if (!(BattlerIsLink(battler) || (BattlerIsRecorded(battler) && BattlerIsOpponent(battler))))
+                if (gBattleTypeFlags & BATTLE_TYPE_MULTIPLAYER)
+                    stringPtr = sText_Trainer1SentOutPkmn;
+                else if (!(BattlerIsLink(battler) || (BattlerIsRecorded(battler) && BattlerIsOpponent(battler))))
                     stringPtr = sText_Trainer1SentOutPkmn;
                 else if (TRAINER_BATTLE_PARAM.opponentA == TRAINER_UNION_ROOM)
                     stringPtr = sText_Trainer1SentOutPkmn;

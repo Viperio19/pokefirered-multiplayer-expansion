@@ -2050,6 +2050,22 @@ const struct ItemInfo gItemsInfo[] =
         .iconPalette = gItemIconPalette_RareCandy,
     },
 
+    [ITEM_RARER_CANDY] =
+    {
+        .name = ITEM_NAME("Rarer Candy"),
+        .description = COMPOUND_STRING(
+            "A reusable candy\n"
+            "that raises a\n"
+            "POKéMON's level."),
+        .pocket = POCKET_KEY_ITEMS,
+        .importance = 1,
+        .type = ITEM_USE_PARTY_MENU,
+        .effect = gItemEffect_RareCandy,
+        .fieldUseFunc = ItemUseOutOfBattle_RareCandy,
+        .iconPic = gItemIcon_RareCandy,
+        .iconPalette = gItemIconPalette_RarerCandy,
+    },
+
     [ITEM_EXP_CANDY_XS] =
     {
         .name = ITEM_NAME("Exp. Candy XS"),
@@ -15813,21 +15829,21 @@ const struct ItemInfo gItemsInfo[] =
         .iconPalette = gItemIconPalette_TwiceSpicedRadish,
     },
 
-    [ITEM_POKESHI_DOLL] =
-    {
-        .name = ITEM_NAME("Pokéshi Doll"),
-        .price = 2000,
-        .description = COMPOUND_STRING(
-            "A wooden toy\n"
-            "resembling a Poké-\n"
-            "mon. Can be sold."),
-        .pocket = POCKET_ITEMS,
-        .sortType = ITEM_TYPE_SELLABLE,
-        .type = ITEM_USE_BAG_MENU,
-        .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
-        .iconPic = gItemIcon_PokeshiDoll,
-        .iconPalette = gItemIconPalette_PokeshiDoll,
-    },
+    // [ITEM_POKESHI_DOLL] =
+    // {
+    //     .name = ITEM_NAME("Pokéshi Doll"),
+    //     .price = 2000,
+    //     .description = COMPOUND_STRING(
+    //         "A wooden toy\n"
+    //         "resembling a Poké-\n"
+    //         "mon. Can be sold."),
+    //     .pocket = POCKET_ITEMS,
+    //     .sortType = ITEM_TYPE_SELLABLE,
+    //     .type = ITEM_USE_BAG_MENU,
+    //     .fieldUseFunc = ItemUseOutOfBattle_CannotUse,
+    //     .iconPic = gItemIcon_PokeshiDoll,
+    //     .iconPalette = gItemIconPalette_PokeshiDoll,
+    // },
 };
 
 #undef ITEM_NAME

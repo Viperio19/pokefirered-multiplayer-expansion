@@ -893,7 +893,7 @@ static u8 GetBattleEnvironmentOverride(void)
     {
         return gBattleEnvironment;
     }
-    else if (gBattleTypeFlags & (BATTLE_TYPE_FRONTIER | BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK | BATTLE_TYPE_EREADER_TRAINER))
+    else if (gBattleTypeFlags & (BATTLE_TYPE_FRONTIER | BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK | BATTLE_TYPE_EREADER_TRAINER) && !(gBattleTypeFlags & BATTLE_TYPE_MULTIPLAYER))
         return BATTLE_ENVIRONMENT_FRONTIER;
     else if (gBattleTypeFlags & BATTLE_TYPE_LEGENDARY)
     {
@@ -1141,6 +1141,37 @@ static void DrawLinkBattleVsScreenOutcomeText(void)
     }
 }
 
+void InitLinkMultiBattleVsScreen(u8 taskId)
+{
+    s32 palId;
+
+    switch (gTasks[taskId].data[0])
+    {
+    case 0:
+        gTasks[taskId].data[0]++;
+        break;
+    case 1:
+        palId = AllocSpritePalette(TAG_VS_LETTERS);
+        gPlttBufferUnfaded[OBJ_PLTT_ID(palId) + 15] = gPlttBufferFaded[OBJ_PLTT_ID(palId) + 15] = RGB_WHITE;
+        gBattleStruct->linkBattleVsSpriteId_V = CreateSprite(&sVsLetter_V_SpriteTemplate, 111, 80, 0);
+        gBattleStruct->linkBattleVsSpriteId_S = CreateSprite(&sVsLetter_S_SpriteTemplate, 129, 80, 0);
+        gSprites[gBattleStruct->linkBattleVsSpriteId_V].invisible = TRUE;
+        gSprites[gBattleStruct->linkBattleVsSpriteId_S].invisible = TRUE;
+        gTasks[taskId].data[0]++;
+        break;
+    case 2:
+        DestroyTask(taskId);
+        gSprites[gBattleStruct->linkBattleVsSpriteId_S].oam.tileNum += 0x40;
+        gSprites[gBattleStruct->linkBattleVsSpriteId_V].data[0] = 0;
+        gSprites[gBattleStruct->linkBattleVsSpriteId_S].data[0] = 1;
+        gSprites[gBattleStruct->linkBattleVsSpriteId_V].data[1] = gSprites[gBattleStruct->linkBattleVsSpriteId_V].x;
+        gSprites[gBattleStruct->linkBattleVsSpriteId_S].data[1] = gSprites[gBattleStruct->linkBattleVsSpriteId_S].x;
+        gSprites[gBattleStruct->linkBattleVsSpriteId_V].data[2] = 0;
+        gSprites[gBattleStruct->linkBattleVsSpriteId_S].data[2] = 0;
+        break;
+    }
+}
+
 void InitLinkBattleVsScreen(u8 taskId)
 {
     struct LinkPlayer *linkPlayer;
@@ -1251,7 +1282,7 @@ void InitLinkBattleVsScreen(u8 taskId)
 
 void DrawBattleEntryBackground(void)
 {
-    if (gBattleTypeFlags & BATTLE_TYPE_LINK)
+    if (gBattleTypeFlags & BATTLE_TYPE_LINK && !(gBattleTypeFlags & BATTLE_TYPE_MULTIPLAYER))
     {
         DecompressDataWithHeaderVram(gBattleVSFrame_Gfx, (void *)(BG_CHAR_ADDR(1)));
         DecompressDataWithHeaderVram(gVsLettersGfx, (void *)OBJ_VRAM0);
@@ -1268,7 +1299,7 @@ void DrawBattleEntryBackground(void)
         gBattle_BG2_Y = 0xFF5C;
         LoadCompressedSpriteSheetUsingHeap(&sVsLettersSpriteSheet);
     }
-    else if (gBattleTypeFlags & (BATTLE_TYPE_FRONTIER | BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK | BATTLE_TYPE_EREADER_TRAINER))
+    else if (gBattleTypeFlags & (BATTLE_TYPE_FRONTIER | BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK | BATTLE_TYPE_EREADER_TRAINER) && !(gBattleTypeFlags & BATTLE_TYPE_MULTIPLAYER))
     {
         if (TestRunner_Battle_GetForcedEnvironment()
          && gBattleEnvironmentInfo[gBattleEnvironment].background.tilemap

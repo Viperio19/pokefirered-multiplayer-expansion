@@ -2063,6 +2063,9 @@ void CB2_ContinueSavedGame(void)
 {
     u8 trainerHillMapId;
 
+    if (!gSaveBlock2Ptr->randomizerSeed)
+        gSaveBlock2Ptr->randomizerSeed = gSaveBlock2Ptr->playerTrainerId[0];
+
     FieldClearVBlankHBlankCallbacks();
     StopMapMusic();
     ResetSafariZoneFlag_();

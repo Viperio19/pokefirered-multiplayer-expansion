@@ -7318,7 +7318,7 @@ static inline u32 CalcAttackStat(struct BattleContext *ctx)
     return uq4_12_multiply_by_int_half_down(modifier, atkStat);
 }
 
-static bool32 CanEvolve(u32 species)
+bool32 CanEvolve(u32 species)
 {
     u32 i;
     const struct Evolution *evolutions = GetSpeciesEvolutions(species);
@@ -9248,7 +9248,8 @@ bool32 ShouldGetStatBadgeBoost(u16 badgeFlag, enum BattlerId battler)
 {
     if (GetConfig(CONFIG_BADGE_BOOST) <= GEN_3 && badgeFlag != 0)
     {
-        if (gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_EREADER_TRAINER | BATTLE_TYPE_RECORDED_LINK | BATTLE_TYPE_FRONTIER))
+        if (gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_EREADER_TRAINER | BATTLE_TYPE_RECORDED_LINK | BATTLE_TYPE_FRONTIER)
+         && !(gBattleTypeFlags & BATTLE_TYPE_MULTIPLAYER))
             return FALSE;
         else if (!IsOnPlayerSide(battler))
             return FALSE;
