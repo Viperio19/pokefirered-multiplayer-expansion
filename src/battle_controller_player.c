@@ -1280,9 +1280,9 @@ void SetBattleEndCallbacks(enum BattlerId battler)
                     SetLinkStandbyCallback();
 
                 if (gBattleTypeFlags & BATTLE_TYPE_MULTIPLAYER)
-                    gBattlerControllerFuncs[battler] = SetLinkBattleEndCallbacks;
-                else
                     gBattlerControllerFuncs[battler] = SetMultiLinkBattleEndCallbacks;
+                else
+                    gBattlerControllerFuncs[battler] = SetLinkBattleEndCallbacks;
             }
         }
         else
