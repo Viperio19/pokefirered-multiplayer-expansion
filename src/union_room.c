@@ -1264,21 +1264,23 @@ static void Task_TryJoinLinkGroup(u8 taskId)
 
 static u32 IsTryingToTradeAcrossVersionTooSoon(struct WirelessLink_Group *data, s32 id)
 {
-    struct RfuPlayer *partner = &data->playerList->players[id];
+    return UR_TRADE_READY;
 
-    if (gPlayerCurrActivity == ACTIVITY_TRADE && partner->rfu.data.compatibility.version != VERSION_EMERALD)
-    {
-        if (!(gSaveBlock2Ptr->specialSaveWarpFlags & CHAMPION_SAVEWARP))
-            return UR_TRADE_PLAYER_NOT_READY;
-        else if (partner->rfu.data.compatibility.canLinkNationally)
-            return UR_TRADE_READY;
-    }
-    else
-    {
-        return UR_TRADE_READY;
-    }
+    // struct RfuPlayer *partner = &data->playerList->players[id];
 
-    return UR_TRADE_PARTNER_NOT_READY;
+    // if (gPlayerCurrActivity == ACTIVITY_TRADE && partner->rfu.data.compatibility.version != VERSION_EMERALD)
+    // {
+    //     if (!(gSaveBlock2Ptr->specialSaveWarpFlags & CHAMPION_SAVEWARP))
+    //         return UR_TRADE_PLAYER_NOT_READY;
+    //     else if (partner->rfu.data.compatibility.canLinkNationally)
+    //         return UR_TRADE_READY;
+    // }
+    // else
+    // {
+    //     return UR_TRADE_READY;
+    // }
+
+    // return UR_TRADE_PARTNER_NOT_READY;
 }
 
 static void AskToJoinRfuGroup(struct WirelessLink_Group *data, s32 id)
