@@ -70,7 +70,7 @@ static void (*const sWallyBufferCommands[CONTROLLER_CMDS_COUNT])(enum BattlerId 
     [CONTROLLER_CHOOSEMOVE]               = WallyHandleChooseMove,
     [CONTROLLER_OPENBAG]                  = WallyHandleChooseItem,
     [CONTROLLER_CHOOSEPOKEMON]            = BtlController_Empty,
-    [CONTROLLER_23]                       = BtlController_Empty,
+    [CONTROLLER_FAINTLINKEDPOKEMON]       = BtlController_Empty,
     [CONTROLLER_HEALTHBARUPDATE]          = BtlController_HandleHealthBarUpdate,
     [CONTROLLER_EXPUPDATE]                = BtlController_Empty,
     [CONTROLLER_STATUSICONUPDATE]         = BtlController_Empty,

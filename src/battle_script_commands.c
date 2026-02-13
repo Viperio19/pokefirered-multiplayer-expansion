@@ -14345,6 +14345,54 @@ void BS_TryTrainerSlideMsgFirstOff(void)
     }
 }
 
+void BS_TryFaintLinkedMon(void)
+{
+    NATIVE_ARGS(u8 battler);
+    enum BattlerId battler = GetBattlerForBattleScript(cmd->battler);
+
+    u8 metLocation = GetMonData(GetBattlerMon(battler), MON_DATA_MET_LOCATION, NULL);
+    u32 partner = BATTLE_PARTNER(battler);
+
+    bool32 fainted = FALSE;
+
+    if (gSaveBlock2Ptr->soullink
+     && gBattleTypeFlags & BATTLE_TYPE_MULTIPLAYER
+     && GetBattlerSide(battler) == B_SIDE_PLAYER)
+    {
+        if (metLocation == GetMonData(GetBattlerMon(partner), MON_DATA_MET_LOCATION, NULL) && IsBattlerAlive(partner))
+        {
+            fainted = TRUE;
+            gBattlerAttacker = partner;
+            gBattleStruct->passiveHpUpdate[gBattlerAttacker] = gBattleMons[gBattlerAttacker].hp;
+            BattleScriptPush(cmd->nextInstr);
+            gBattlescriptCurrInstr = BattleScript_LinkedPokemonFaintsOnScreen;
+        }
+        else
+        {
+            u8 i;
+            for (i = 0; i < PARTY_SIZE; i++)
+            {
+                if (i != gBattlerPartyIndexes[B_POSITION_PLAYER_LEFT] && i != gBattlerPartyIndexes[B_POSITION_PLAYER_RIGHT]
+                    && GetMonData(&gPlayerParty[i], MON_DATA_MET_LOCATION, FALSE) == metLocation
+                    && GetMonData(&gPlayerParty[i], MON_DATA_HP, FALSE) != 0)
+                {
+                    fainted = TRUE;
+                    BtlController_EmitFaintLinkedPokemon(gBattlerTarget, B_COMM_TO_CONTROLLER, GetMonData(&gPlayerParty[i], MON_DATA_PERSONALITY, FALSE));
+
+                    GetMonData(&gPlayerParty[i], MON_DATA_NICKNAME, gBattleTextBuff1);
+                    
+                    BattleScriptPush(cmd->nextInstr);
+                    gBattlescriptCurrInstr = BattleScript_LinkedPokemonFaintsOffScreen;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (!fainted)
+        gBattlescriptCurrInstr = cmd->nextInstr;
+}
+
 void BS_TryTrainerSlideMsgLastOn(void)
 {
     NATIVE_ARGS(u8 battler);

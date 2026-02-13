@@ -4023,6 +4023,7 @@ BattleScript_FaintBattler::
 	tryactivatereceiver BS_FAINTED
 	tryactivatesoulheart
 	trytrainerslidemsgfirstoff BS_FAINTED
+	tryfaintlinkedmon BS_FAINTED
 	return
 
 BattleScript_GiveExp::

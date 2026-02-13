@@ -72,7 +72,7 @@ static void (*const sPlayerPartnerBufferCommands[CONTROLLER_CMDS_COUNT])(enum Ba
     [CONTROLLER_CHOOSEMOVE]               = PlayerPartnerHandleChooseMove,
     [CONTROLLER_OPENBAG]                  = BtlController_Empty,
     [CONTROLLER_CHOOSEPOKEMON]            = PlayerPartnerHandleChoosePokemon,
-    [CONTROLLER_23]                       = BtlController_Empty,
+    [CONTROLLER_FAINTLINKEDPOKEMON]       = BtlController_Empty,
     [CONTROLLER_HEALTHBARUPDATE]          = BtlController_HandleHealthBarUpdate,
     [CONTROLLER_EXPUPDATE]                = PlayerHandleExpUpdate, // Partner's player gets experience the same way as the player.
     [CONTROLLER_STATUSICONUPDATE]         = BtlController_HandleStatusIconUpdate,

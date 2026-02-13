@@ -68,7 +68,7 @@ static void (*const sLinkPartnerBufferCommands[CONTROLLER_CMDS_COUNT])(enum Batt
     [CONTROLLER_CHOOSEMOVE]               = BtlController_Empty,
     [CONTROLLER_OPENBAG]                  = BtlController_Empty,
     [CONTROLLER_CHOOSEPOKEMON]            = BtlController_Empty,
-    [CONTROLLER_23]                       = BtlController_Empty,
+    [CONTROLLER_FAINTLINKEDPOKEMON]       = BtlController_HandleFaintLinkedPokemon,
     [CONTROLLER_HEALTHBARUPDATE]          = BtlController_HandleHealthBarUpdate,
     [CONTROLLER_EXPUPDATE]                = BtlController_Empty,
     [CONTROLLER_STATUSICONUPDATE]         = BtlController_HandleStatusIconUpdate,

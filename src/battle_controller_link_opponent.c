@@ -65,7 +65,7 @@ static void (*const sLinkOpponentBufferCommands[CONTROLLER_CMDS_COUNT])(enum Bat
     [CONTROLLER_CHOOSEMOVE]               = BtlController_Empty,
     [CONTROLLER_OPENBAG]                  = BtlController_Empty,
     [CONTROLLER_CHOOSEPOKEMON]            = BtlController_Empty,
-    [CONTROLLER_23]                       = BtlController_Empty,
+    [CONTROLLER_FAINTLINKEDPOKEMON]       = BtlController_Empty,
     [CONTROLLER_HEALTHBARUPDATE]          = BtlController_HandleHealthBarUpdate,
     [CONTROLLER_EXPUPDATE]                = BtlController_Empty,
     [CONTROLLER_STATUSICONUPDATE]         = BtlController_HandleStatusIconUpdate,

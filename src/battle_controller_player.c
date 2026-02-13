@@ -60,7 +60,7 @@ static void PlayerHandleChooseAction(enum BattlerId battler);
 static void PlayerHandleYesNoBox(enum BattlerId battler);
 static void PlayerHandleChooseItem(enum BattlerId battler);
 static void PlayerHandleChoosePokemon(enum BattlerId battler);
-static void PlayerHandleCmd23(enum BattlerId battler);
+// static void PlayerHandleCmd23(enum BattlerId battler);
 static void PlayerHandleStatusXor(enum BattlerId battler);
 static void PlayerHandleDMA3Transfer(enum BattlerId battler);
 static void PlayerHandlePlayBGM(enum BattlerId battler);
@@ -121,7 +121,7 @@ static void (*const sPlayerBufferCommands[CONTROLLER_CMDS_COUNT])(enum BattlerId
     [CONTROLLER_CHOOSEMOVE]               = PlayerHandleChooseMove,
     [CONTROLLER_OPENBAG]                  = PlayerHandleChooseItem,
     [CONTROLLER_CHOOSEPOKEMON]            = PlayerHandleChoosePokemon,
-    [CONTROLLER_23]                       = PlayerHandleCmd23,
+    [CONTROLLER_FAINTLINKEDPOKEMON]       = BtlController_HandleFaintLinkedPokemon,
     [CONTROLLER_HEALTHBARUPDATE]          = BtlController_HandleHealthBarUpdate,
     [CONTROLLER_EXPUPDATE]                = PlayerHandleExpUpdate,
     [CONTROLLER_STATUSICONUPDATE]         = BtlController_HandleStatusIconUpdate,
@@ -2232,12 +2232,12 @@ static void PlayerHandleChoosePokemon(enum BattlerId battler)
     }
 }
 
-static void PlayerHandleCmd23(enum BattlerId battler)
-{
-    BattleStopLowHpSound();
-    BeginNormalPaletteFade(PALETTES_ALL, 2, 0, 16, RGB_BLACK);
-    BtlController_Complete(battler);
-}
+// static void PlayerHandleCmd23(enum BattlerId battler)
+// {
+//     BattleStopLowHpSound();
+//     BeginNormalPaletteFade(PALETTES_ALL, 2, 0, 16, RGB_BLACK);
+//     BtlController_Complete(battler);
+// }
 
 void PlayerHandleExpUpdate(enum BattlerId battler)
 {

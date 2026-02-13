@@ -2270,3 +2270,8 @@
 	.byte \battler
 	.byte \switchedItems
 	.endm
+
+	.macro tryfaintlinkedmon battler:req
+	callnative BS_TryFaintLinkedMon
+	.byte \battler
+	.endm

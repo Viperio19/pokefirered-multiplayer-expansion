@@ -92,7 +92,8 @@ bool32 BattlerIsRecorded(enum BattlerId battlerId)
 bool32 BattlerIsLink(enum BattlerId battlerId)
 {
     return (gBattlerBattleController[battlerId] == BATTLE_CONTROLLER_LINK_PARTNER
-         || gBattlerBattleController[battlerId] == BATTLE_CONTROLLER_LINK_OPPONENT) && !(gBattleTypeFlags & BATTLE_TYPE_MULTIPLAYER);
+         || gBattlerBattleController[battlerId] == BATTLE_CONTROLLER_LINK_OPPONENT)
+         && !(gBattleTypeFlags & BATTLE_TYPE_MULTIPLAYER && BattlerIsOpponent(battlerId));
 }
 
 bool32 BattlerIsWally(enum BattlerId battlerId)
@@ -1114,13 +1115,14 @@ void BtlController_EmitChoosePokemon(enum BattlerId battler, u32 bufferId, u8 ca
     PrepareBufferDataTransfer(battler, bufferId, gBattleResources->transferBuffer, 9);  // Only 7 bytes were written.
 }
 
-static void UNUSED BtlController_EmitCmd23(enum BattlerId battler, u32 bufferId)
+void BtlController_EmitFaintLinkedPokemon(enum BattlerId battler, u32 bufferId, u32 personality)
 {
-    gBattleResources->transferBuffer[0] = CONTROLLER_23;
-    gBattleResources->transferBuffer[1] = CONTROLLER_23;
-    gBattleResources->transferBuffer[2] = CONTROLLER_23;
-    gBattleResources->transferBuffer[3] = CONTROLLER_23;
-    PrepareBufferDataTransfer(battler, bufferId, gBattleResources->transferBuffer, 4);
+    gBattleResources->transferBuffer[0] = CONTROLLER_FAINTLINKEDPOKEMON;
+    gBattleResources->transferBuffer[1] = personality;
+    gBattleResources->transferBuffer[2] = (personality & 0x0000FF00) >> 8;
+    gBattleResources->transferBuffer[3] = (personality & 0x00FF0000) >> 16;
+    gBattleResources->transferBuffer[4] = (personality & 0xFF000000) >> 24;
+    PrepareBufferDataTransfer(battler, bufferId, gBattleResources->transferBuffer, 5);
 }
 
 // why is the argument u16 if it's being cast to s16 anyway?
@@ -2681,6 +2683,23 @@ void BtlController_HandlePrintStringPlayerOnly(enum BattlerId battler)
         BtlController_HandlePrintString(battler);
     else
         BtlController_Complete(battler);
+}
+
+void BtlController_HandleFaintLinkedPokemon(enum BattlerId battler)
+{
+    u32 personality = gBattleResources->bufferA[battler][1] | (gBattleResources->bufferA[battler][2] << 8) | (gBattleResources->bufferA[battler][3] << 16) | (gBattleResources->bufferA[battler][4] << 24);
+
+    for (u8 i = 0; i < PARTY_SIZE; i++)
+    {
+        if (GetMonData(&gPlayerParty[i], MON_DATA_PERSONALITY, FALSE) == personality)
+        {
+            u16 zero = 0;
+            SetMonData(&gPlayerParty[i], MON_DATA_HP, &zero);
+            break;
+        }
+    }
+
+    BtlController_Complete(battler);
 }
 
 void BtlController_HandleHealthBarUpdate(enum BattlerId battler)
