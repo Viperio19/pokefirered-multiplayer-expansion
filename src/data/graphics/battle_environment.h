@@ -1,3 +1,47 @@
+#if IS_FRLG
+
+const u32 gBattleEnvironmentTiles_TallGrass[] = INCBIN_U32("graphics/battle_environment_frlg/grass/terrain.4bpp.smol");
+const u16 gBattleEnvironmentPalette_TallGrass[] = INCBIN_U16("graphics/battle_environment_frlg/grass/terrain.gbapal");
+const u32 gBattleEnvironmentTilemap_TallGrass[] = INCBIN_U32("graphics/battle_environment_frlg/grass/terrain.bin.smolTM");
+
+const u32 gBattleEnvironmentTiles_LongGrass[] = INCBIN_U32("graphics/battle_environment_frlg/long_grass/terrain.4bpp.smol");
+const u16 gBattleEnvironmentPalette_LongGrass[] = INCBIN_U16("graphics/battle_environment_frlg/long_grass/terrain.gbapal");
+const u32 gBattleEnvironmentTilemap_LongGrass[] = INCBIN_U32("graphics/battle_environment_frlg/long_grass/terrain.bin.smolTM");
+
+const u32 gBattleEnvironmentTiles_Sand[] = INCBIN_U32("graphics/battle_environment_frlg/sand/terrain.4bpp.smol");
+const u16 gBattleEnvironmentPalette_Sand[] = INCBIN_U16("graphics/battle_environment_frlg/sand/terrain.gbapal");
+const u32 gBattleEnvironmentTilemap_Sand[] = INCBIN_U32("graphics/battle_environment_frlg/sand/terrain.bin.smolTM");
+
+const u32 gBattleEnvironmentTiles_Underwater[] = INCBIN_U32("graphics/battle_environment_frlg/underwater/terrain.4bpp.smol");
+const u16 gBattleEnvironmentPalette_Underwater[] = INCBIN_U16("graphics/battle_environment_frlg/underwater/terrain.gbapal");
+const u32 gBattleEnvironmentTilemap_Underwater[] = INCBIN_U32("graphics/battle_environment_frlg/underwater/terrain.bin.smolTM");
+
+const u32 gBattleEnvironmentTiles_Water[] = INCBIN_U32("graphics/battle_environment_frlg/water/terrain.4bpp.smol");
+const u16 gBattleEnvironmentPalette_Water[] = INCBIN_U16("graphics/battle_environment_frlg/water/terrain.gbapal");
+const u32 gBattleEnvironmentTilemap_Water[] = INCBIN_U32("graphics/battle_environment_frlg/water/terrain.bin.smolTM");
+
+const u32 gBattleEnvironmentTiles_PondWater[] = INCBIN_U32("graphics/battle_environment_frlg/pond/terrain.4bpp.smol");
+const u16 gBattleEnvironmentPalette_PondWater[] = INCBIN_U16("graphics/battle_environment_frlg/pond/terrain.gbapal");
+const u32 gBattleEnvironmentTilemap_PondWater[] = INCBIN_U32("graphics/battle_environment_frlg/pond/terrain.bin.smolTM");
+
+const u32 gBattleEnvironmentTiles_Rock[] = INCBIN_U32("graphics/battle_environment_frlg/mountain/terrain.4bpp.smol");
+const u16 gBattleEnvironmentPalette_Rock[] = INCBIN_U16("graphics/battle_environment_frlg/mountain/terrain.gbapal");
+const u32 gBattleEnvironmentTilemap_Rock[] = INCBIN_U32("graphics/battle_environment_frlg/mountain/terrain.bin.smolTM");
+
+const u32 gBattleEnvironmentTiles_Cave[] = INCBIN_U32("graphics/battle_environment_frlg/cave/terrain.4bpp.smol");
+const u16 gBattleEnvironmentPalette_Cave[] = INCBIN_U16("graphics/battle_environment_frlg/cave/terrain.gbapal");
+const u32 gBattleEnvironmentTilemap_Cave[] = INCBIN_U32("graphics/battle_environment_frlg/cave/terrain.bin.smolTM");
+
+const u32 gBattleEnvironmentTiles_Building[] = INCBIN_U32("graphics/battle_environment_frlg/building/terrain.4bpp.smol");
+const u16 gBattleEnvironmentPalette_Building[] = INCBIN_U16("graphics/battle_environment_frlg/building/terrain.gbapal");
+const u32 gBattleEnvironmentTilemap_Building[] = INCBIN_U32("graphics/battle_environment_frlg/building/terrain.bin.smolTM");
+
+const u16 gBattleEnvironmentPalette_BuildingGym[] = INCBIN_U16("graphics/battle_environment_frlg/indoor/gym.gbapal");
+const u16 gBattleEnvironmentPalette_BuildingLeader[] = INCBIN_U16("graphics/battle_environment_frlg/indoor/leader.gbapal");
+const u16 gBattleEnvironmentPalette_Plain[] = INCBIN_U16("graphics/battle_environment_frlg/indoor/plain.gbapal");
+
+#else
+
 const u32 gBattleEnvironmentTiles_TallGrass[] = INCBIN_U32("graphics/battle_environment/tall_grass/tiles.4bpp.smol");
 const u16 gBattleEnvironmentPalette_TallGrass[] = INCBIN_U16("graphics/battle_environment/tall_grass/palette.gbapal");
 const u32 gBattleEnvironmentTilemap_TallGrass[] = INCBIN_U32("graphics/battle_environment/tall_grass/map.bin.smolTM");
@@ -37,6 +81,13 @@ const u32 gBattleEnvironmentTilemap_Building[] = INCBIN_U32("graphics/battle_env
 const u16 gBattleEnvironmentPalette_BuildingGym[] = INCBIN_U16("graphics/battle_environment/building/gym.gbapal");
 const u16 gBattleEnvironmentPalette_BuildingLeader[] = INCBIN_U16("graphics/battle_environment/building/leader.gbapal");
 const u16 gBattleEnvironmentPalette_Plain[] = INCBIN_U16("graphics/battle_environment/plain/palette.gbapal");
+
+#endif
+
+const u16 gBattleEnvironmentPalette_Lorelei[] = INCBIN_U16("graphics/battle_environment_frlg/indoor/lorelei.gbapal.lz");
+const u16 gBattleEnvironmentPalette_Bruno[] = INCBIN_U16("graphics/battle_environment_frlg/indoor/bruno.gbapal.lz");
+const u16 gBattleEnvironmentPalette_Agatha[] = INCBIN_U16("graphics/battle_environment_frlg/indoor/agatha.gbapal.lz");
+const u16 gBattleEnvironmentPalette_Lance[] = INCBIN_U16("graphics/battle_environment_frlg/indoor/lance.gbapal.lz");
 
 const u32 gBattleEnvironmentTiles_Stadium[] = INCBIN_U32("graphics/battle_environment/stadium/tiles.4bpp.smol");
 const u32 gBattleEnvironmentTilemap_Stadium[] = INCBIN_U32("graphics/battle_environment/stadium/map.bin.smolTM");

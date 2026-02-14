@@ -528,6 +528,58 @@ const struct BattleEnvironment gBattleEnvironmentInfo[BATTLE_ENVIRONMENT_COUNT] 
         .camouflageType = TYPE_PSYCHIC,
         .camouflageBlend = DEFAULT_CAMOUFLAGE_BLEND,
     },
+
+    [BATTLE_ENVIRONMENT_LORELEI] =
+    {
+        .name = _("Lorelei"),
+        .secretPowerAnimation = BUILDING_SECRET_POWER_ANIMATION,
+        .secretPowerEffect = BUILDING_SECRET_POWER_EFFECT,
+        .camouflageType = BUILDING_CAMOUFLAGE_TYPE,
+        .camouflageBlend = BUILDING_CAMOUFLAGE_BLEND,
+        .entry = ENVIRONMENT_ENTRY(Building),
+        .background = ENVIRONMENT_BACKGROUND(Building),
+        .palette = gBattleEnvironmentPalette_Lorelei,
+        .battleIntroSlide = BUILDING_BATTLE_INTRO_SLIDE,
+    },
+
+    [BATTLE_ENVIRONMENT_BRUNO] =
+    {
+        .name = _("Bruno"),
+        .secretPowerAnimation = BUILDING_SECRET_POWER_ANIMATION,
+        .secretPowerEffect = BUILDING_SECRET_POWER_EFFECT,
+        .camouflageType = BUILDING_CAMOUFLAGE_TYPE,
+        .camouflageBlend = BUILDING_CAMOUFLAGE_BLEND,
+        .entry = ENVIRONMENT_ENTRY(Building),
+        .background = ENVIRONMENT_BACKGROUND(Building),
+        .palette = gBattleEnvironmentPalette_Bruno,
+        .battleIntroSlide = BUILDING_BATTLE_INTRO_SLIDE,
+    },
+
+    [BATTLE_ENVIRONMENT_AGATHA] =
+    {
+        .name = _("Agatha"),
+        .secretPowerAnimation = BUILDING_SECRET_POWER_ANIMATION,
+        .secretPowerEffect = BUILDING_SECRET_POWER_EFFECT,
+        .camouflageType = BUILDING_CAMOUFLAGE_TYPE,
+        .camouflageBlend = BUILDING_CAMOUFLAGE_BLEND,
+        .entry = ENVIRONMENT_ENTRY(Building),
+        .background = ENVIRONMENT_BACKGROUND(Building),
+        .palette = gBattleEnvironmentPalette_Agatha,
+        .battleIntroSlide = BUILDING_BATTLE_INTRO_SLIDE,
+    },
+
+    [BATTLE_ENVIRONMENT_LANCE] =
+    {
+        .name = _("Lance"),
+        .secretPowerAnimation = BUILDING_SECRET_POWER_ANIMATION,
+        .secretPowerEffect = BUILDING_SECRET_POWER_EFFECT,
+        .camouflageType = BUILDING_CAMOUFLAGE_TYPE,
+        .camouflageBlend = BUILDING_CAMOUFLAGE_BLEND,
+        .entry = ENVIRONMENT_ENTRY(Building),
+        .background = ENVIRONMENT_BACKGROUND(Building),
+        .palette = gBattleEnvironmentPalette_Lance,
+        .battleIntroSlide = BUILDING_BATTLE_INTRO_SLIDE,
+    },
 };
 
 static const struct {
@@ -541,5 +593,9 @@ static const struct {
     {MAP_BATTLE_SCENE_PHOEBE,   BATTLE_ENVIRONMENT_PHOEBE},
     {MAP_BATTLE_SCENE_GLACIA,   BATTLE_ENVIRONMENT_GLACIA},
     {MAP_BATTLE_SCENE_DRAKE,    BATTLE_ENVIRONMENT_DRAKE},
-    {MAP_BATTLE_SCENE_FRONTIER, BATTLE_ENVIRONMENT_FRONTIER}
+    {MAP_BATTLE_SCENE_FRONTIER, BATTLE_ENVIRONMENT_FRONTIER},
+    {MAP_BATTLE_SCENE_LORELEI,  BATTLE_ENVIRONMENT_LORELEI},
+    {MAP_BATTLE_SCENE_BRUNO,    BATTLE_ENVIRONMENT_BRUNO},
+    {MAP_BATTLE_SCENE_AGATHA,   BATTLE_ENVIRONMENT_AGATHA},
+    {MAP_BATTLE_SCENE_LANCE,    BATTLE_ENVIRONMENT_LANCE},
 };
