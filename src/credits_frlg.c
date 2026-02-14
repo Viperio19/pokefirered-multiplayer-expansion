@@ -77,7 +77,8 @@ enum CreditsClosingText
 
 enum CreditsString
 {
-    CREDITS_STRING_DIRECTOR = 0,
+    CREDITS_STRING_MODDED_BY = 0,
+    CREDITS_STRING_DIRECTOR,
     CREDITS_STRING_ART_DIRECTOR_BATTLE_DIRECTOR,
     CREDITS_STRING_PROGRAM_LEADER_PLANNING_LEADER_GRAPHIC_DESIGN_LEADER,
     CREDITS_STRING_PROGRAMMERS,
@@ -348,6 +349,8 @@ static const struct WindowTemplate sWindowTemplates_Pikachu[] = {
 
 ALIGNED(4) const u8 gString_PokemonFireRed_Staff[] = _("Pokémon FireRed Version\nStaff");
 ALIGNED(4) const u8 gString_PokemonLeafGreen_Staff[] = _("Pokémon LeafGreen Version\nStaff");
+ALIGNED(4) const u8 gCreditsString_Modded_By[] = _("\n\nModded By\n\n\n\n");
+ALIGNED(4) const u8 gCreditsString_Viperio[] = _("\n\n\nViperio\n\n\n");
 ALIGNED(4) const u8 gCreditsString_Director[] = _("\n\nDirector\n\n\n\n");
 ALIGNED(4) const u8 gCreditsString_Junichi_Masuda[] = _("\n\n\nJunichi Masuda\n\n\n");
 ALIGNED(4) const u8 gCreditsString_Art_Director_Battle_Director[] = _("\nArt Director\n\nBattle Director\n\n\n");
@@ -492,9 +495,10 @@ static const struct CompressedGraphicsHeader sCopyrightOrTheEndGfxHeaders[] = {
 
 static const struct CreditsScrcmd sCreditsScript[] = {
     CREDITS_MAPNEXT(ROUTE23, 16),
-    CREDITS_PRINT(DIRECTOR, 300),
-    CREDITS_PRINT(ART_DIRECTOR_BATTLE_DIRECTOR, 300),
-    CREDITS_PRINT(PROGRAM_LEADER_PLANNING_LEADER_GRAPHIC_DESIGN_LEADER, 300),
+    CREDITS_PRINT(MODDED_BY, 225),
+    CREDITS_PRINT(DIRECTOR, 225),
+    CREDITS_PRINT(ART_DIRECTOR_BATTLE_DIRECTOR, 225),
+    CREDITS_PRINT(PROGRAM_LEADER_PLANNING_LEADER_GRAPHIC_DESIGN_LEADER, 225),
     CREDITS_PRINT(END, 60),
     CREDITS_MAPNEXT(VIRIDIAN_CITY, 0),
     CREDITS_PRINT(PROGRAMMERS, 211),
@@ -773,6 +777,7 @@ static const struct CreditsOverworldCmd *const sOverworldMapScenes[] = {
 };
 
 static const struct CreditsTextHeader sCreditsTexts[] = {
+    { gCreditsString_Modded_By, gCreditsString_Viperio, FALSE },
     { gCreditsString_Director, gCreditsString_Junichi_Masuda, FALSE },
     { gCreditsString_Art_Director_Battle_Director, gCreditsString_Ken_Sugimori_Shigeki_Morimoto, FALSE },
     { gCreditsString_Program_Leader_Planning_Leader_Graphic_Design_Leader, gCreditsString_Tetsuya_Watanabe_Koji_Nishino_Takao_Unno, FALSE },
