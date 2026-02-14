@@ -30,6 +30,7 @@
 #include "fieldmap.h"
 #include "follower_npc.h"
 #include "gpu_regs.h"
+#include "international_string_util.h"
 #include "item.h"
 #include "lilycove_lady.h"
 #include "main.h"
@@ -54,6 +55,7 @@
 #include "shop.h"
 #include "slot_machine.h"
 #include "sound.h"
+#include "starter_choose.h"
 #include "string_util.h"
 #include "text.h"
 #include "text_window.h"
@@ -3489,5 +3491,28 @@ bool8 ScrCmd_getbraillestringwidth(struct ScriptContext * ctx)
         msg = (u8 *)ctx->data[0];
 
     gSpecialVar_0x8004 = GetStringWidth(FONT_BRAILLE, msg, -1);
+    return FALSE;
+}
+
+bool8 ScrCmd_setrandomstarter(struct ScriptContext * ctx)
+{
+    u32 varId = ScriptReadHalfword(ctx);
+    u16 *ptr = GetVarPointer(varId);
+
+    Script_RequestEffects(SCREFF_V1);
+    Script_RequestWriteVar(varId);
+
+    *ptr = GetStarterPokemon(ScriptReadHalfword(ctx));
+    return FALSE;
+}
+
+bool8 ScrCmd_bufferspeciescategory(struct ScriptContext *ctx)
+{
+    u8 stringVarIndex = ScriptReadByte(ctx);
+    u16 species = VarGet(ScriptReadHalfword(ctx)) & OBJ_EVENT_MON_SPECIES_MASK; // ignore possible shiny / form bits
+
+    Script_RequestEffects(SCREFF_V1);
+
+    CopyMonCategoryText(species, sScriptStringVars[stringVarIndex]);
     return FALSE;
 }
