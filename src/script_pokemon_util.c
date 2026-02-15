@@ -371,7 +371,7 @@ static u32 ScriptGiveMonParameterized(u8 side, u8 slot, u16 species, u8 level, e
     u32 i;
     bool32 isShiny;
 
-    if (gSaveBlock2Ptr->randomizeGiftPkmn == OPTIONS_RANDOM_YES && FlagGet(FLAG_ADVENTURE_STARTED)) // don't rerandomize starter pokemon
+    if (gSaveBlock2Ptr->randomizeGiftPkmn == OPTIONS_RANDOM_YES && FlagGet(FLAG_BEAT_RIVAL_IN_OAKS_LAB)) // don't rerandomize starter pokemon
         species = GetRandomSpecies(species, species, FALSE);
 
     u32 personality = GetMonPersonality(species, gender, nature, RANDOM_UNOWN_LETTER);
