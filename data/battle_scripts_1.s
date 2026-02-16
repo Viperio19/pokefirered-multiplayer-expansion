@@ -1783,11 +1783,26 @@ BattleScript_AttackAccUpEnd:
 	goto BattleScript_MoveEnd
 
 BattleScript_EffectMistyTerrain::
+	attackcanceler
+	setterrain BattleScript_ButItFailed
+	setfieldstatus STATUS_FIELD_MISTY_TERRAIN
+	goto BattleScript_EffectTerrain
 BattleScript_EffectGrassyTerrain::
+	attackcanceler
+	setterrain BattleScript_ButItFailed
+	setfieldstatus STATUS_FIELD_GRASSY_TERRAIN
+	goto BattleScript_EffectTerrain
 BattleScript_EffectElectricTerrain::
+	attackcanceler
+	setterrain BattleScript_ButItFailed
+	setfieldstatus STATUS_FIELD_ELECTRIC_TERRAIN
+	goto BattleScript_EffectTerrain
 BattleScript_EffectPsychicTerrain::
 	attackcanceler
 	setterrain BattleScript_ButItFailed
+	setfieldstatus STATUS_FIELD_PSYCHIC_TERRAIN
+	goto BattleScript_EffectTerrain
+BattleScript_EffectTerrain::
 	attackanimation
 	waitanimation
 	printfromtable gTerrainStringIds
@@ -4527,6 +4542,38 @@ BattleScript_OverworldTerrain::
 	call BattleScript_ActivateTerrainEffects
 	end3
 
+BattleScript_OverworldMistyTerrain::
+	setfieldstatus STATUS_FIELD_MISTY_TERRAIN
+	printfromtable gTerrainStartsStringIds
+	waitmessage B_WAIT_TIME_LONG
+	playanimation BS_BATTLER_0, B_ANIM_RESTORE_BG
+	call BattleScript_ActivateTerrainEffects
+	end3
+
+BattleScript_OverworldGrassyTerrain::
+	setfieldstatus STATUS_FIELD_GRASSY_TERRAIN
+	printfromtable gTerrainStartsStringIds
+	waitmessage B_WAIT_TIME_LONG
+	playanimation BS_BATTLER_0, B_ANIM_RESTORE_BG
+	call BattleScript_ActivateTerrainEffects
+	end3
+
+BattleScript_OverworldElectricTerrain::
+	setfieldstatus STATUS_FIELD_ELECTRIC_TERRAIN
+	printfromtable gTerrainStartsStringIds
+	waitmessage B_WAIT_TIME_LONG
+	playanimation BS_BATTLER_0, B_ANIM_RESTORE_BG
+	call BattleScript_ActivateTerrainEffects
+	end3
+
+BattleScript_OverworldPsychicTerrain::
+	setfieldstatus STATUS_FIELD_PSYCHIC_TERRAIN
+	printfromtable gTerrainStartsStringIds
+	waitmessage B_WAIT_TIME_LONG
+	playanimation BS_BATTLER_0, B_ANIM_RESTORE_BG
+	call BattleScript_ActivateTerrainEffects
+	end3
+
 BattleScript_OverworldHazard::
 	printfromtable gStartingStatusStringIds
 	waitmessage B_WAIT_TIME_LONG
@@ -4577,6 +4624,7 @@ BattleScript_MagicRoomHealingItemsLoop:
 BattleScript_TerrainEnds_Ret::
 	printfromtable gTerrainStringIds
 	waitmessage B_WAIT_TIME_LONG
+	setfieldstatus 0
 	playanimation BS_ATTACKER, B_ANIM_RESTORE_BG
 	tryboosterenergy ON_TERRAIN
 	return
@@ -4956,6 +5004,7 @@ BattleScript_GulpMissileNoSecondEffectGulping:
 	return
 
 BattleScript_SeedSowerActivates::
+	setfieldstatus STATUS_FIELD_GRASSY_TERRAIN
 	pause B_WAIT_TIME_SHORT
 	call BattleScript_AbilityPopUp
 	printstring STRINGID_TERRAINBECOMESGRASSY
@@ -6484,6 +6533,7 @@ BattleScript_ElectricSurgeActivates::
 	call BattleScript_AbilityPopUp
 	printstring STRINGID_TERRAINBECOMESELECTRIC
 	waitmessage B_WAIT_TIME_LONG
+	setfieldstatus STATUS_FIELD_ELECTRIC_TERRAIN
 	playanimation BS_SCRIPTING, B_ANIM_RESTORE_BG
 	call BattleScript_ActivateTerrainEffects
 	return
@@ -6493,6 +6543,7 @@ BattleScript_MistySurgeActivates::
 	call BattleScript_AbilityPopUp
 	printstring STRINGID_TERRAINBECOMESMISTY
 	waitmessage B_WAIT_TIME_LONG
+	setfieldstatus STATUS_FIELD_MISTY_TERRAIN
 	playanimation BS_SCRIPTING, B_ANIM_RESTORE_BG
 	call BattleScript_ActivateTerrainEffects
 	return
@@ -6502,6 +6553,7 @@ BattleScript_GrassySurgeActivates::
 	call BattleScript_AbilityPopUp
 	printstring STRINGID_TERRAINBECOMESGRASSY
 	waitmessage B_WAIT_TIME_LONG
+	setfieldstatus STATUS_FIELD_GRASSY_TERRAIN
 	playanimation BS_SCRIPTING, B_ANIM_RESTORE_BG
 	call BattleScript_ActivateTerrainEffects
 	return
@@ -6511,6 +6563,7 @@ BattleScript_PsychicSurgeActivates::
 	call BattleScript_AbilityPopUp
 	printstring STRINGID_TERRAINBECOMESPSYCHIC
 	waitmessage B_WAIT_TIME_LONG
+	setfieldstatus STATUS_FIELD_PSYCHIC_TERRAIN
 	playanimation BS_SCRIPTING, B_ANIM_RESTORE_BG
 	call BattleScript_ActivateTerrainEffects
 	return
@@ -7515,6 +7568,7 @@ BattleScript_ActivateTeraformZero_RemoveWeather:
 	jumpifhalfword CMP_NO_COMMON_BITS, gFieldStatuses, STATUS_FIELD_TERRAIN_ANY, BattleScript_ActivateTeraformZeroEffects
 BattleScript_ActivateTeraformZero_RemoveTerrain:
 	removeterrain
+	setfieldstatus 0
 	playanimation BS_ATTACKER, B_ANIM_RESTORE_BG
 	printfromtable gTerrainStringIds
 	waitmessage B_WAIT_TIME_LONG
@@ -7677,6 +7731,7 @@ BattleScript_ExtremeEvoboostEnd::
 
 BattleScript_RemoveTerrain::
 	removeterrain
+	setfieldstatus 0
 	playanimation BS_ATTACKER, B_ANIM_RESTORE_BG
 	printfromtable gTerrainStringIds
 	waitmessage B_WAIT_TIME_LONG
@@ -7916,7 +7971,32 @@ BattleScript_EffectSetWeather::
 	call BattleScript_ActivateWeatherAbilities
 	return
 
-BattleScript_EffectSetTerrain::
+BattleScript_EffectSetMistyTerrain::
+	setfieldstatus STATUS_FIELD_MISTY_TERRAIN
+	printfromtable gTerrainStringIds
+	waitmessage B_WAIT_TIME_LONG
+	playanimation BS_ATTACKER, B_ANIM_RESTORE_BG
+	call BattleScript_ActivateTerrainEffects
+	return
+
+BattleScript_EffectSetGrassyTerrain::
+	setfieldstatus STATUS_FIELD_GRASSY_TERRAIN
+	printfromtable gTerrainStringIds
+	waitmessage B_WAIT_TIME_LONG
+	playanimation BS_ATTACKER, B_ANIM_RESTORE_BG
+	call BattleScript_ActivateTerrainEffects
+	return
+
+BattleScript_EffectSetElectricTerrain::
+	setfieldstatus STATUS_FIELD_ELECTRIC_TERRAIN
+	printfromtable gTerrainStringIds
+	waitmessage B_WAIT_TIME_LONG
+	playanimation BS_ATTACKER, B_ANIM_RESTORE_BG
+	call BattleScript_ActivateTerrainEffects
+	return
+
+BattleScript_EffectSetPsychicTerrain::
+	setfieldstatus STATUS_FIELD_PSYCHIC_TERRAIN
 	printfromtable gTerrainStringIds
 	waitmessage B_WAIT_TIME_LONG
 	playanimation BS_ATTACKER, B_ANIM_RESTORE_BG

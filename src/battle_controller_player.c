@@ -130,7 +130,7 @@ static void (*const sPlayerBufferCommands[CONTROLLER_CMDS_COUNT])(enum BattlerId
     [CONTROLLER_DATATRANSFER]             = BtlController_Empty,
     [CONTROLLER_DMA3TRANSFER]             = PlayerHandleDMA3Transfer,
     [CONTROLLER_PLAYBGM]                  = PlayerHandlePlayBGM,
-    [CONTROLLER_32]                       = BtlController_Empty,
+    [CONTROLLER_SETFIELDSTATUS]           = BtlController_HandleSetFieldStatus,
     [CONTROLLER_TWORETURNVALUES]          = PlayerHandleTwoReturnValues,
     [CONTROLLER_CHOSENMONRETURNVALUE]     = PlayerHandleChosenMonReturnValue,
     [CONTROLLER_ONERETURNVALUE]           = PlayerHandleOneReturnValue,
@@ -411,7 +411,7 @@ static void HandleInputChooseAction(enum BattlerId battler)
 
 void HandleInputChooseTarget(enum BattlerId battler)
 {
-    enum BattlerId i;
+    s32 i;
     static const enum BattlerPosition identities[MAX_BATTLERS_COUNT] =
     {
         B_POSITION_PLAYER_LEFT,

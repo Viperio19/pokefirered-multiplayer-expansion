@@ -258,7 +258,7 @@ enum
     CONTROLLER_DATATRANSFER,
     CONTROLLER_DMA3TRANSFER,
     CONTROLLER_PLAYBGM,
-    CONTROLLER_32,
+    CONTROLLER_SETFIELDSTATUS,
     CONTROLLER_TWORETURNVALUES,
     CONTROLLER_CHOSENMONRETURNVALUE,
     CONTROLLER_ONERETURNVALUE,
@@ -332,6 +332,7 @@ void BtlController_EmitExpUpdate(enum BattlerId battler, u32 bufferId, u8 partyI
 void BtlController_EmitStatusIconUpdate(enum BattlerId battler, u32 bufferId, u32 status);
 void BtlController_EmitStatusAnimation(enum BattlerId battler, u32 bufferId, bool8 isVolatile, u32 status);
 void BtlController_EmitDataTransfer(enum BattlerId battler, u32 bufferId, u16 size, void *data);
+void BtlController_EmitSetFieldStatus(enum BattlerId battler, u32 bufferId, u32 statusFlag);
 void BtlController_EmitTwoReturnValues(enum BattlerId battler, u32 bufferId, u8 ret8, u32 ret32);
 void BtlController_EmitChosenMonReturnValue(enum BattlerId battler, u32 bufferId, u8 partyId, u8 *battlePartyOrder);
 void BtlController_EmitOneReturnValue(enum BattlerId battler, u32 bufferId, u16 ret);
@@ -381,6 +382,7 @@ void BtlController_HandleFaintLinkedPokemon(enum BattlerId battler);
 void BtlController_HandleHealthBarUpdate(enum BattlerId battler);
 void BtlController_HandleStatusIconUpdate(enum BattlerId battler);
 void BtlController_HandleStatusAnimation(enum BattlerId battler);
+void BtlController_HandleSetFieldStatus(enum BattlerId battler);
 void BtlController_HandleHitAnimation(enum BattlerId battler);
 void BtlController_HandlePlaySE(enum BattlerId battler);
 void BtlController_HandlePlayFanfareOrBGM(enum BattlerId battler);

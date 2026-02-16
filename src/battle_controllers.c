@@ -1218,16 +1218,14 @@ static void UNUSED BtlController_EmitPlayBGM(enum BattlerId battler, u32 bufferI
     PrepareBufferDataTransfer(battler, bufferId, gBattleResources->transferBuffer, songId + 3);
 }
 
-static void UNUSED BtlController_EmitCmd32(enum BattlerId battler, u32 bufferId, u16 size, void *data)
+void BtlController_EmitSetFieldStatus(enum BattlerId battler, u32 bufferId, u32 statusFlag)
 {
-    s32 i;
-
-    gBattleResources->transferBuffer[0] = CONTROLLER_32;
-    gBattleResources->transferBuffer[1] = size;
-    gBattleResources->transferBuffer[2] = (size & 0xFF00) >> 8;
-    for (i = 0; i < size; i++)
-        gBattleResources->transferBuffer[3 + i] = *(u8 *)(data++);
-    PrepareBufferDataTransfer(battler, bufferId, gBattleResources->transferBuffer, size + 3);
+    gBattleResources->transferBuffer[0] = CONTROLLER_SETFIELDSTATUS;
+    gBattleResources->transferBuffer[1] = statusFlag;
+    gBattleResources->transferBuffer[2] = (statusFlag & 0x0000FF00) >> 8;
+    gBattleResources->transferBuffer[3] = (statusFlag & 0x00FF0000) >> 16;
+    gBattleResources->transferBuffer[4] = (statusFlag & 0xFF000000) >> 24;
+    PrepareBufferDataTransfer(battler, bufferId, gBattleResources->transferBuffer, 5);
 }
 
 void BtlController_EmitTwoReturnValues(enum BattlerId battler, u32 bufferId, u8 ret8, u32 ret32)
@@ -2763,6 +2761,16 @@ void BtlController_HandleStatusAnimation(enum BattlerId battler)
                         gBattleResources->bufferA[battler][2] | (gBattleResources->bufferA[battler][3] << 8) | (gBattleResources->bufferA[battler][4] << 16) | (gBattleResources->bufferA[battler][5] << 24));
         gBattlerControllerFuncs[battler] = Controller_WaitForStatusAnimation;
     }
+}
+
+void BtlController_HandleSetFieldStatus(enum BattlerId battler)
+{
+    u32 statusFlag = gBattleResources->bufferA[battler][1] | (gBattleResources->bufferA[battler][2] << 8) | (gBattleResources->bufferA[battler][3] << 16) | (gBattleResources->bufferA[battler][4] << 24);
+
+    gFieldStatuses &= ~STATUS_FIELD_TERRAIN_ANY;
+    gFieldStatuses |= statusFlag;
+
+    BtlController_Complete(battler);
 }
 
 void BtlController_HandleHitAnimation(enum BattlerId battler)

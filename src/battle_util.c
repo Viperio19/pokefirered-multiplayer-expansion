@@ -2668,7 +2668,7 @@ bool32 TryFieldEffects(enum FieldEffectCases caseId)
             isTerrain = TRUE;
             if (effect)
             {
-                BattleScriptPushCursorAndCallback(BattleScript_OverworldTerrain);
+                BattleScriptPushCursorAndCallback(BattleScript_OverworldElectricTerrain);
                 return TRUE;
             }
         }
@@ -2683,7 +2683,7 @@ bool32 TryFieldEffects(enum FieldEffectCases caseId)
             isTerrain = TRUE;
             if (effect)
             {
-                BattleScriptPushCursorAndCallback(BattleScript_OverworldTerrain);
+                BattleScriptPushCursorAndCallback(BattleScript_OverworldMistyTerrain);
                 return TRUE;
             }
         }
@@ -2698,7 +2698,7 @@ bool32 TryFieldEffects(enum FieldEffectCases caseId)
             isTerrain = TRUE;
             if (effect)
             {
-                BattleScriptPushCursorAndCallback(BattleScript_OverworldTerrain);
+                BattleScriptPushCursorAndCallback(BattleScript_OverworldGrassyTerrain);
                 return TRUE;
             }
         }
@@ -2711,6 +2711,11 @@ bool32 TryFieldEffects(enum FieldEffectCases caseId)
                         &gFieldTimers.terrainTimer, gStartingStatuses.psychicTerrain ? 0 : 5);
             gStartingStatuses.psychicTerrainTemporary = gStartingStatuses.psychicTerrain = FALSE;
             isTerrain = TRUE;
+            if (effect)
+            {
+                BattleScriptPushCursorAndCallback(BattleScript_OverworldPsychicTerrain);
+                return TRUE;
+            }
         }
         else if (gStartingStatuses.trickRoom || gStartingStatuses.trickRoomTemporary)
         {
@@ -2954,7 +2959,7 @@ bool32 TryFieldEffects(enum FieldEffectCases caseId)
             gFieldStatuses = STATUS_FIELD_ELECTRIC_TERRAIN;
             gFieldTimers.terrainTimer = 0;
             gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_TERRAIN_SET_ELECTRIC;
-            BattleScriptPushCursorAndCallback(BattleScript_OverworldTerrain);
+            BattleScriptPushCursorAndCallback(BattleScript_OverworldElectricTerrain);
             effect = TRUE;
         }
         else if (B_OVERWORLD_FOG >= GEN_8
@@ -2964,7 +2969,7 @@ bool32 TryFieldEffects(enum FieldEffectCases caseId)
             gFieldStatuses = STATUS_FIELD_MISTY_TERRAIN;
             gFieldTimers.terrainTimer = 0;
             gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_TERRAIN_SET_MISTY;
-            BattleScriptPushCursorAndCallback(BattleScript_OverworldTerrain);
+            BattleScriptPushCursorAndCallback(BattleScript_OverworldMistyTerrain);
             effect = TRUE;
         }
         break;
@@ -8826,7 +8831,7 @@ u32 GetBattlerVisualSpecies(enum BattlerId battler)
     u32 illusionSpecies = GetIllusionMonSpecies(battler);
     if (illusionSpecies != SPECIES_NONE)
         return illusionSpecies;
-    return gBattleMons[battler].species;
+    return GetMonData(GetBattlerMon(battler), MON_DATA_SPECIES);
 }
 
 bool32 TryClearIllusion(enum BattlerId battler, enum Ability ability)
