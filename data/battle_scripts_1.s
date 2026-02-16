@@ -3594,7 +3594,7 @@ BattleScript_EffectDarkVoid::
 BattleScript_EffectNonVolatileStatus::
 	attackcanceler
 	trynonvolatilestatus
-	accuracycheck BattleScript_ButItFailed
+	accuracycheck BattleScript_MoveMissed
 	attackanimation
 	waitanimation
 	setnonvolatilestatus TRIGGER_ON_MOVE

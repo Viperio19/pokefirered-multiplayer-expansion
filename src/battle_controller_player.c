@@ -724,6 +724,8 @@ void HandleInputChooseMove(enum BattlerId battler)
                 canSelectTarget = 1; // either selected or user
             if (moveTarget == TARGET_USER_OR_ALLY && IsBattlerAlive(BATTLE_PARTNER(battler)))
                 canSelectTarget = 1;
+            if (moveTarget == TARGET_FIELD)
+                canSelectTarget = 0;
 
             if (moveInfo->currentPp[gMoveSelectionCursor[battler]] == 0)
             {
