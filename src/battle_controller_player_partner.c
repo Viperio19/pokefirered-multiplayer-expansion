@@ -102,6 +102,7 @@ static void (*const sPlayerPartnerBufferCommands[CONTROLLER_CMDS_COUNT])(enum Ba
     [CONTROLLER_RESETACTIONMOVESELECTION] = BtlController_Empty,
     [CONTROLLER_ENDLINKBATTLE]            = PlayerPartnerHandleEndLinkBattle,
     [CONTROLLER_DEBUGMENU]                = BtlController_Empty,
+    [CONTROLLER_SHOWABILITYPOPUP]         = BtlController_Empty,
     [CONTROLLER_TERMINATOR_NOP]           = BtlController_TerminatorNop
 };
 

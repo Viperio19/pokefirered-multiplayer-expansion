@@ -97,6 +97,7 @@ static void (*const sRecordedPlayerBufferCommands[CONTROLLER_CMDS_COUNT])(enum B
     [CONTROLLER_RESETACTIONMOVESELECTION] = BtlController_Empty,
     [CONTROLLER_ENDLINKBATTLE]            = RecordedPlayerHandleEndLinkBattle,
     [CONTROLLER_DEBUGMENU]                = BtlController_Empty,
+    [CONTROLLER_SHOWABILITYPOPUP]         = BtlController_Empty,
     [CONTROLLER_TERMINATOR_NOP]           = BtlController_TerminatorNop
 };
 

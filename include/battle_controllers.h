@@ -279,6 +279,7 @@ enum
     CONTROLLER_RESETACTIONMOVESELECTION,
     CONTROLLER_ENDLINKBATTLE,
     CONTROLLER_DEBUGMENU,
+    CONTROLLER_SHOWABILITYPOPUP,
     /*new controllers should go here*/
     CONTROLLER_TERMINATOR_NOP,
     CONTROLLER_CMDS_COUNT
@@ -353,6 +354,7 @@ void BtlController_EmitLinkStandbyMsg(enum BattlerId battler, u32 bufferId, u8 m
 void BtlController_EmitResetActionMoveSelection(enum BattlerId battler, u32 bufferId, u8 caseId);
 void BtlController_EmitEndLinkBattle(enum BattlerId battler, u32 bufferId, u8 battleOutcome);
 void BtlController_EmitDebugMenu(enum BattlerId battler, u32 bufferId);
+void BtlController_EmitShowAbilityPopUp(enum BattlerId battler, u32 bufferId);
 
 void BtlController_Complete(enum BattlerId battler); // Can be used for all the controllers.
 void BtlController_Empty(enum BattlerId battler); // Empty command, does nothing, only completes the execution.
@@ -395,6 +397,7 @@ void BtlController_HandleIntroTrainerBallThrow(enum BattlerId battler, u16 tagTr
 void BtlController_HandleDrawPartyStatusSummary(enum BattlerId battler, enum BattleSide side, bool32 considerDelay);
 void BtlController_HandleHidePartyStatusSummary(enum BattlerId battler);
 void BtlController_HandleBattleAnimation(enum BattlerId battler);
+void BtlController_HandleShowAbilityPopUp(enum BattlerId battler);
 
 // player controller
 void SetControllerToPlayer(enum BattlerId battler);

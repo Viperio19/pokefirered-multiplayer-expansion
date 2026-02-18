@@ -102,6 +102,7 @@ static void (*const sRecordedOpponentBufferCommands[CONTROLLER_CMDS_COUNT])(enum
     [CONTROLLER_RESETACTIONMOVESELECTION] = BtlController_Empty,
     [CONTROLLER_ENDLINKBATTLE]            = RecordedOpponentHandleEndLinkBattle,
     [CONTROLLER_DEBUGMENU]                = BtlController_Empty,
+    [CONTROLLER_SHOWABILITYPOPUP]         = BtlController_Empty,
     [CONTROLLER_TERMINATOR_NOP]           = BtlController_TerminatorNop
 };
 

@@ -1429,6 +1429,16 @@ void BtlController_EmitDebugMenu(enum BattlerId battler, u32 bufferId)
     PrepareBufferDataTransfer(battler, bufferId, gBattleResources->transferBuffer, 1);
 }
 
+void BtlController_EmitShowAbilityPopUp(enum BattlerId battler, u32 bufferId)
+{
+    gBattleResources->transferBuffer[0] = CONTROLLER_SHOWABILITYPOPUP;
+    gBattleResources->transferBuffer[1] = gBattlerAbility;
+    gBattleResources->transferBuffer[2] = gBattleMons[gBattlerAbility].ability;
+    gBattleResources->transferBuffer[3] = (gBattleMons[gBattlerAbility].ability & 0xFF00) >> 8;
+    gBattleResources->transferBuffer[4] = IsDoubleBattle() != 0;
+    PrepareBufferDataTransfer(battler, bufferId, gBattleResources->transferBuffer, 5);
+}
+
 // Standardized Controller functions
 
 // Can be used for all the controllers.
@@ -3063,6 +3073,16 @@ void BtlController_HandleBattleAnimation(enum BattlerId battler)
         if (ShouldUpdateTvData(battler))
             BattleTv_SetDataBasedOnAnimation(animationId);
     }
+}
+
+void BtlController_HandleShowAbilityPopUp(enum BattlerId battler)
+{
+    u8 abilityBattler = gBattleResources->bufferA[battler][1];
+    u16 ability = gBattleResources->bufferA[battler][2] | (gBattleResources->bufferA[battler][3] << 8);
+    bool8 isDoubleBattle = gBattleResources->bufferA[battler][4];
+
+    CreateAbilityPopUp(abilityBattler, ability, isDoubleBattle);
+    BtlController_Complete(battler);
 }
 
 void AnimateMonAfterPokeBallFail(enum BattlerId battler)

@@ -98,6 +98,7 @@ static void (*const sLinkPartnerBufferCommands[CONTROLLER_CMDS_COUNT])(enum Batt
     [CONTROLLER_RESETACTIONMOVESELECTION] = BtlController_Empty,
     [CONTROLLER_ENDLINKBATTLE]            = LinkPartnerHandleEndLinkBattle,
     [CONTROLLER_DEBUGMENU]                = BtlController_Empty,
+    [CONTROLLER_SHOWABILITYPOPUP]         = BtlController_HandleShowAbilityPopUp,
     [CONTROLLER_TERMINATOR_NOP]           = BtlController_TerminatorNop
 };
 

@@ -151,6 +151,7 @@ static void (*const sPlayerBufferCommands[CONTROLLER_CMDS_COUNT])(enum BattlerId
     [CONTROLLER_RESETACTIONMOVESELECTION] = PlayerHandleResetActionMoveSelection,
     [CONTROLLER_ENDLINKBATTLE]            = PlayerHandleEndLinkBattle,
     [CONTROLLER_DEBUGMENU]                = PlayerHandleBattleDebug,
+    [CONTROLLER_SHOWABILITYPOPUP]         = BtlController_HandleShowAbilityPopUp,
     [CONTROLLER_TERMINATOR_NOP]           = BtlController_TerminatorNop
 };
 

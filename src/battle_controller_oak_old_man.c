@@ -113,6 +113,7 @@ static void (*const sOakOldManBufferCommands[CONTROLLER_CMDS_COUNT])(enum Battle
     [CONTROLLER_RESETACTIONMOVESELECTION] = BtlController_Empty,
     [CONTROLLER_ENDLINKBATTLE]            = OakOldManHandleEndLinkBattle,
     [CONTROLLER_DEBUGMENU]                = BtlController_Empty,
+    [CONTROLLER_SHOWABILITYPOPUP]         = BtlController_Empty,
     [CONTROLLER_TERMINATOR_NOP]           = BtlController_TerminatorNop,
 };
 

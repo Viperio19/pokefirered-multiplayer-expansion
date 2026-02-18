@@ -84,10 +84,10 @@ const u16 gBattleEnvironmentPalette_Plain[] = INCBIN_U16("graphics/battle_enviro
 
 #endif
 
-const u16 gBattleEnvironmentPalette_Lorelei[] = INCBIN_U16("graphics/battle_environment_frlg/indoor/lorelei.gbapal.lz");
-const u16 gBattleEnvironmentPalette_Bruno[] = INCBIN_U16("graphics/battle_environment_frlg/indoor/bruno.gbapal.lz");
-const u16 gBattleEnvironmentPalette_Agatha[] = INCBIN_U16("graphics/battle_environment_frlg/indoor/agatha.gbapal.lz");
-const u16 gBattleEnvironmentPalette_Lance[] = INCBIN_U16("graphics/battle_environment_frlg/indoor/lance.gbapal.lz");
+const u16 gBattleEnvironmentPalette_Lorelei[] = INCBIN_U16("graphics/battle_environment_frlg/indoor/lorelei.gbapal");
+const u16 gBattleEnvironmentPalette_Bruno[] = INCBIN_U16("graphics/battle_environment_frlg/indoor/bruno.gbapal");
+const u16 gBattleEnvironmentPalette_Agatha[] = INCBIN_U16("graphics/battle_environment_frlg/indoor/agatha.gbapal");
+const u16 gBattleEnvironmentPalette_Lance[] = INCBIN_U16("graphics/battle_environment_frlg/indoor/lance.gbapal");
 
 const u32 gBattleEnvironmentTiles_Stadium[] = INCBIN_U32("graphics/battle_environment/stadium/tiles.4bpp.smol");
 const u32 gBattleEnvironmentTilemap_Stadium[] = INCBIN_U32("graphics/battle_environment/stadium/map.bin.smolTM");

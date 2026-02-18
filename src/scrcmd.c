@@ -2656,7 +2656,7 @@ bool8 ScrCmd_setwildbattle(struct ScriptContext *ctx)
     Script_RequestEffects(SCREFF_V1);
 
     // legendary static pokemon
-    if (species >= SPECIES_REGIROCK)
+    if (species >= SPECIES_ARTICUNO)
     {
         if (gSaveBlock2Ptr->randomizeLegendaryPkmn == OPTIONS_RANDOM_SPECIAL)
             species = sLegendaryPokemon[((6 + item) * species ^ gSaveBlock2Ptr->randomizerSeed) % (ARRAY_COUNT(sLegendaryPokemon) + 1)];
