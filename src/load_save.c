@@ -214,22 +214,20 @@ void LoadPlayerPartyAfterLinkMultiBattle(void)
 {
     int i = 0, slot = 0;
 
-    if (IsPokemonInParty(gSaveBlock1Ptr->playerParty, &gPlayerParty[i]))
+    // Copy pokemon from slots [3-5] to [0-2] if first pokemon is not in stored party (player 2)
+    if (!IsPokemonInParty(gSaveBlock1Ptr->playerParty, &gPlayerParty[0]))
     {
-        while (slot < PARTY_SIZE / 2 && GetMonData(&gPlayerParty[slot], MON_DATA_SPECIES, 0) != SPECIES_NONE)
-        {
-            slot++;
-        }
-    }
-    else
-    {
-        while (slot < PARTY_SIZE / 2 && GetMonData(&gPlayerParty[slot + PARTY_SIZE / 2], MON_DATA_SPECIES, 0) != SPECIES_NONE)
-        {
-            gPlayerParty[slot] = gPlayerParty[slot + PARTY_SIZE / 2];
-            slot++;
-        }
+        for (i = 0; i < PARTY_SIZE / 2; i++)
+            gPlayerParty[i] = gPlayerParty[i + PARTY_SIZE / 2];
     }
 
+    // Get the first empty slot in slots [0-2]
+    while (slot < PARTY_SIZE / 2 && GetMonData(&gPlayerParty[slot], MON_DATA_SPECIES, 0) != SPECIES_NONE)
+    {
+        slot++;
+    }
+
+    // Copy pokemon from saved party (that aren't already in the current party) to the current party
     for (i = 0; i < PARTY_SIZE; i++)
     {
         struct Pokemon *mon = &gSaveBlock1Ptr->playerParty[i];
@@ -246,6 +244,7 @@ void LoadPlayerPartyAfterLinkMultiBattle(void)
 
     slot = PARTY_SIZE - 1;
 
+    // Clear the rest of the party
     while (GetMonData(&gSaveBlock1Ptr->playerParty[slot], MON_DATA_SPECIES, 0) == SPECIES_NONE)
     {
         gPlayerParty[slot] = gSaveBlock1Ptr->playerParty[slot];
@@ -253,6 +252,23 @@ void LoadPlayerPartyAfterLinkMultiBattle(void)
     }
 
     gPlayerPartyCount = gSaveBlock1Ptr->playerPartyCount;
+}
+
+void LoadPartyItems(void)
+{
+    u8 i = 0, j = 0;
+    
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        for (j = 0; j < PARTY_SIZE; j++)
+        {
+            if (GetMonData(&gPlayerParty[i], MON_DATA_PERSONALITY) == GetMonData(&gSaveBlock1Ptr->playerParty[j], MON_DATA_PERSONALITY))
+            {
+                enum Item item = GetMonData(&gSaveBlock1Ptr->playerParty[j], MON_DATA_HELD_ITEM, 0);
+                SetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM, &item);
+            }
+        }
+    }
 }
 
 void SavePlayerBoxes(void)

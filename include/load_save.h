@@ -51,6 +51,7 @@ void ClearContinueGameWarpStatus2(void);
 void SavePlayerParty(void);
 void LoadPlayerParty(void);
 void LoadPlayerPartyAfterLinkMultiBattle(void);
+void LoadPartyItems(void);
 void SavePlayerBoxes(void);
 void LoadPlayerBoxes(void);
 void SaveObjectEvents(void);

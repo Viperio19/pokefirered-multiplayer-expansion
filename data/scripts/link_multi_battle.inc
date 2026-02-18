@@ -124,6 +124,7 @@ LinkMultiBattle_EventScript_DoLinkMultiBattle::
 	waitmessage
 	special DoLinkMultiBattle
 	waitstate
+	special LoadPartyItems
 	special SavePlayerParty
 	tower_closelink
 	goto_if_set FLAG_NO_INTRO_MUTLI_BATTLE, LinkMultiBattle_EventScript_GoToPostBattleScript
