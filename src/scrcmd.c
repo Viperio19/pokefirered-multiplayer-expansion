@@ -1,5 +1,6 @@
 #include "global.h"
 #include "frontier_util.h"
+#include "battle_main.h"
 #include "battle_setup.h"
 #include "battle_util.h"
 #include "berry.h"
@@ -30,6 +31,7 @@
 #include "fieldmap.h"
 #include "follower_npc.h"
 #include "gpu_regs.h"
+#include "international_string_util.h"
 #include "item.h"
 #include "lilycove_lady.h"
 #include "main.h"
@@ -54,6 +56,7 @@
 #include "shop.h"
 #include "slot_machine.h"
 #include "sound.h"
+#include "starter_choose.h"
 #include "string_util.h"
 #include "text.h"
 #include "text_window.h"
@@ -2515,6 +2518,134 @@ bool8 ScrCmd_cleartrainerflag(struct ScriptContext *ctx)
     return FALSE;
 }
 
+static const u16 sLegendaryPokemon[] =
+{
+    // Gen 1
+    SPECIES_ARTICUNO,
+    SPECIES_ZAPDOS,
+    SPECIES_MOLTRES,
+    SPECIES_MEWTWO,
+    SPECIES_MEW,
+    // Gen 2
+    SPECIES_RAIKOU,
+    SPECIES_ENTEI,
+    SPECIES_SUICUNE,
+    SPECIES_LUGIA,
+    SPECIES_HO_OH,
+    SPECIES_CELEBI,
+    // Gen 3
+    SPECIES_REGIROCK,
+    SPECIES_REGICE,
+    SPECIES_REGISTEEL,
+    SPECIES_LATIAS,
+    SPECIES_LATIOS,
+    SPECIES_KYOGRE,
+    SPECIES_GROUDON,
+    SPECIES_RAYQUAZA,
+    SPECIES_JIRACHI,
+    SPECIES_DEOXYS,
+    // Gen 4
+    SPECIES_UXIE,
+    SPECIES_MESPRIT,
+    SPECIES_AZELF,
+    SPECIES_PALKIA,
+    SPECIES_DIALGA,
+    SPECIES_HEATRAN,
+    SPECIES_REGIGIGAS,
+    SPECIES_GIRATINA,
+    SPECIES_CRESSELIA,
+    SPECIES_PHIONE,
+    SPECIES_MANAPHY,
+    SPECIES_DARKRAI,
+    SPECIES_SHAYMIN,
+    SPECIES_ARCEUS,
+    // Gen 5
+    SPECIES_VICTINI,
+    SPECIES_COBALION,
+    SPECIES_TERRAKION,
+    SPECIES_VIRIZION,
+    SPECIES_TORNADUS,
+    SPECIES_THUNDURUS,
+    SPECIES_RESHIRAM,
+    SPECIES_ZEKROM,
+    SPECIES_LANDORUS,
+    SPECIES_KYUREM,
+    SPECIES_KELDEO,
+    SPECIES_MELOETTA,
+    SPECIES_GENESECT,
+    // Gen 6
+    SPECIES_XERNEAS,
+    SPECIES_YVELTAL,
+    SPECIES_ZYGARDE,
+    SPECIES_DIANCIE,
+    SPECIES_HOOPA,
+    SPECIES_VOLCANION,
+    // Gen 7
+    SPECIES_TYPE_NULL,
+    SPECIES_SILVALLY,
+    SPECIES_TAPU_KOKO,
+    SPECIES_TAPU_LELE,
+    SPECIES_TAPU_BULU,
+    SPECIES_TAPU_FINI,
+    SPECIES_COSMOG,
+    SPECIES_COSMOEM,
+    SPECIES_SOLGALEO,
+    SPECIES_LUNALA,
+    SPECIES_NECROZMA,
+    SPECIES_MAGEARNA,
+    SPECIES_MARSHADOW,
+    SPECIES_ZERAORA,
+    SPECIES_MELTAN,
+    SPECIES_MELMETAL,
+    SPECIES_NIHILEGO,
+    SPECIES_BUZZWOLE,
+    SPECIES_PHEROMOSA,
+    SPECIES_XURKITREE,
+    SPECIES_CELESTEELA,
+    SPECIES_KARTANA,
+    SPECIES_GUZZLORD,
+    SPECIES_POIPOLE,
+    SPECIES_NAGANADEL,
+    SPECIES_STAKATAKA,
+    SPECIES_BLACEPHALON,
+    // Gen 8
+    SPECIES_ZACIAN,
+    SPECIES_ZAMAZENTA,
+    SPECIES_ETERNATUS,
+    SPECIES_KUBFU,
+    SPECIES_URSHIFU_RAPID_STRIKE,
+    SPECIES_URSHIFU_SINGLE_STRIKE,
+    SPECIES_REGIELEKI,
+    SPECIES_REGIDRAGO,
+    SPECIES_GLASTRIER,
+    SPECIES_SPECTRIER,
+    SPECIES_CALYREX,
+    SPECIES_ENAMORUS,
+    SPECIES_ZARUDE,
+    SPECIES_ARTICUNO_GALAR,
+    SPECIES_ZAPDOS_GALAR,
+    SPECIES_MOLTRES_GALAR,
+    // Gen 9
+    SPECIES_WO_CHIEN,
+    SPECIES_CHIEN_PAO,
+    SPECIES_TING_LU,
+    SPECIES_CHI_YU,
+    SPECIES_KORAIDON,
+    SPECIES_MIRAIDON,
+    SPECIES_WALKING_WAKE,
+    SPECIES_IRON_LEAVES,
+    SPECIES_OKIDOGI,
+    SPECIES_MUNKIDORI,
+    SPECIES_FEZANDIPITI,
+    SPECIES_OGERPON,
+    SPECIES_GOUGING_FIRE,
+    SPECIES_RAGING_BOLT,
+    SPECIES_IRON_BOULDER,
+    SPECIES_IRON_CROWN,
+    SPECIES_TERAPAGOS,
+    SPECIES_PECHARUNT,
+};
+
 bool8 ScrCmd_setwildbattle(struct ScriptContext *ctx)
 {
     enum Species species = ScriptReadHalfword(ctx);
@@ -2525,6 +2656,18 @@ bool8 ScrCmd_setwildbattle(struct ScriptContext *ctx)
     enum Item item2 = ScriptReadHalfword(ctx);
 
     Script_RequestEffects(SCREFF_V1);
+
+    // legendary static pokemon
+    if (species >= SPECIES_ARTICUNO)
+    {
+        if (gSaveBlock2Ptr->randomizeLegendaryPkmn == OPTIONS_RANDOM_SPECIAL)
+            species = sLegendaryPokemon[((6 + item) * species ^ gSaveBlock2Ptr->randomizerSeed) % (ARRAY_COUNT(sLegendaryPokemon) + 1)];
+        else if (gSaveBlock2Ptr->randomizeLegendaryPkmn == OPTIONS_RANDOM_YES)
+            species = GetRandomSpecies(species, item, FALSE);
+    }
+    // non legendary static pokemon
+    else if (gSaveBlock2Ptr->randomizeWildPkmn != OPTIONS_RANDOM_NO)
+        species = GetRandomSpecies(species, item, gSaveBlock2Ptr->randomizeWildPkmn == OPTIONS_RANDOM_SPECIAL);
 
     if (species2 == SPECIES_NONE)
     {
@@ -3424,5 +3567,28 @@ bool8 ScrCmd_getbraillestringwidth(struct ScriptContext * ctx)
         msg = (u8 *)ctx->data[0];
 
     gSpecialVar_0x8004 = GetStringWidth(FONT_BRAILLE, msg, -1);
+    return FALSE;
+}
+
+bool8 ScrCmd_setrandomstarter(struct ScriptContext * ctx)
+{
+    u32 varId = ScriptReadHalfword(ctx);
+    u16 *ptr = GetVarPointer(varId);
+
+    Script_RequestEffects(SCREFF_V1);
+    Script_RequestWriteVar(varId);
+
+    *ptr = GetStarterPokemon(ScriptReadHalfword(ctx));
+    return FALSE;
+}
+
+bool8 ScrCmd_bufferspeciescategory(struct ScriptContext *ctx)
+{
+    u8 stringVarIndex = ScriptReadByte(ctx);
+    u16 species = VarGet(ScriptReadHalfword(ctx)) & OBJ_EVENT_MON_SPECIES_MASK; // ignore possible shiny / form bits
+
+    Script_RequestEffects(SCREFF_V1);
+
+    CopyMonCategoryText(species, sScriptStringVars[stringVarIndex]);
     return FALSE;
 }

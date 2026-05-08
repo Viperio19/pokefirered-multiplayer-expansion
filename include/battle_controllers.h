@@ -249,7 +249,7 @@ enum
     CONTROLLER_CHOOSEMOVE,
     CONTROLLER_OPENBAG,
     CONTROLLER_CHOOSEPOKEMON,
-    CONTROLLER_23,
+    CONTROLLER_FAINTLINKEDPOKEMON,
     CONTROLLER_HEALTHBARUPDATE,
     CONTROLLER_EXPUPDATE,
     CONTROLLER_STATUSICONUPDATE,
@@ -258,7 +258,7 @@ enum
     CONTROLLER_DATATRANSFER,
     CONTROLLER_DMA3TRANSFER,
     CONTROLLER_PLAYBGM,
-    CONTROLLER_32,
+    CONTROLLER_SETFIELDSTATUS,
     CONTROLLER_TWORETURNVALUES,
     CONTROLLER_CHOSENMONRETURNVALUE,
     CONTROLLER_ONERETURNVALUE,
@@ -279,6 +279,7 @@ enum
     CONTROLLER_RESETACTIONMOVESELECTION,
     CONTROLLER_ENDLINKBATTLE,
     CONTROLLER_DEBUGMENU,
+    CONTROLLER_SHOWABILITYPOPUP,
     /*new controllers should go here*/
     CONTROLLER_TERMINATOR_NOP,
     CONTROLLER_CMDS_COUNT
@@ -326,11 +327,13 @@ void BtlController_EmitYesNoBox(enum BattlerId battler, u32 bufferId);
 void BtlController_EmitChooseMove(enum BattlerId battler, u32 bufferId, bool8 isDoubleBattle, bool8 NoPpNumber, struct ChooseMoveStruct *movePpData);
 void BtlController_EmitChooseItem(enum BattlerId battler, u32 bufferId, u8 *battlePartyOrder);
 void BtlController_EmitChoosePokemon(enum BattlerId battler, u32 bufferId, u8 caseId, u8 slotId, u16 abilityId, enum BattlerId battlerPreventingSwitchout, u8 *data);
+void BtlController_EmitFaintLinkedPokemon(enum BattlerId battler, u32 bufferId, u32 personality);
 void BtlController_EmitHealthBarUpdate(enum BattlerId battler, u32 bufferId, u16 hpValue);
 void BtlController_EmitExpUpdate(enum BattlerId battler, u32 bufferId, u8 partyId, s32 expPoints);
 void BtlController_EmitStatusIconUpdate(enum BattlerId battler, u32 bufferId, u32 status);
 void BtlController_EmitStatusAnimation(enum BattlerId battler, u32 bufferId, bool8 isVolatile, u32 status);
 void BtlController_EmitDataTransfer(enum BattlerId battler, u32 bufferId, u16 size, void *data);
+void BtlController_EmitSetFieldStatus(enum BattlerId battler, u32 bufferId, u32 statusFlag);
 void BtlController_EmitTwoReturnValues(enum BattlerId battler, u32 bufferId, u8 ret8, u32 ret32);
 void BtlController_EmitChosenMonReturnValue(enum BattlerId battler, u32 bufferId, u8 partyId, u8 *battlePartyOrder);
 void BtlController_EmitOneReturnValue(enum BattlerId battler, u32 bufferId, u16 ret);
@@ -351,6 +354,7 @@ void BtlController_EmitLinkStandbyMsg(enum BattlerId battler, u32 bufferId, u8 m
 void BtlController_EmitResetActionMoveSelection(enum BattlerId battler, u32 bufferId, u8 caseId);
 void BtlController_EmitEndLinkBattle(enum BattlerId battler, u32 bufferId, u8 battleOutcome);
 void BtlController_EmitDebugMenu(enum BattlerId battler, u32 bufferId);
+void BtlController_EmitShowAbilityPopUp(enum BattlerId battler, u32 bufferId);
 
 void BtlController_Complete(enum BattlerId battler); // Can be used for all the controllers.
 void BtlController_Empty(enum BattlerId battler); // Empty command, does nothing, only completes the execution.
@@ -376,9 +380,11 @@ void BtlController_HandleBallThrowAnim(enum BattlerId battler);
 void BtlController_HandleMoveAnimation(enum BattlerId battler);
 void BtlController_HandlePrintString(enum BattlerId battler);
 void BtlController_HandlePrintStringPlayerOnly(enum BattlerId battler);
+void BtlController_HandleFaintLinkedPokemon(enum BattlerId battler);
 void BtlController_HandleHealthBarUpdate(enum BattlerId battler);
 void BtlController_HandleStatusIconUpdate(enum BattlerId battler);
 void BtlController_HandleStatusAnimation(enum BattlerId battler);
+void BtlController_HandleSetFieldStatus(enum BattlerId battler);
 void BtlController_HandleHitAnimation(enum BattlerId battler);
 void BtlController_HandlePlaySE(enum BattlerId battler);
 void BtlController_HandlePlayFanfareOrBGM(enum BattlerId battler);
@@ -391,6 +397,7 @@ void BtlController_HandleIntroTrainerBallThrow(enum BattlerId battler, u16 tagTr
 void BtlController_HandleDrawPartyStatusSummary(enum BattlerId battler, enum BattleSide side, bool32 considerDelay);
 void BtlController_HandleHidePartyStatusSummary(enum BattlerId battler);
 void BtlController_HandleBattleAnimation(enum BattlerId battler);
+void BtlController_HandleShowAbilityPopUp(enum BattlerId battler);
 
 // player controller
 void SetControllerToPlayer(enum BattlerId battler);

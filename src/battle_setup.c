@@ -1321,8 +1321,8 @@ void BattleSetup_StartTrainerBattle(void)
         }
     }
 
-    if (GetTrainerBattleMode() == TRAINER_BATTLE_EARLY_RIVAL && GetRivalBattleFlags() & RIVAL_BATTLE_TUTORIAL)
-        gBattleTypeFlags |= BATTLE_TYPE_FIRST_BATTLE;
+    // if (GetTrainerBattleMode() == TRAINER_BATTLE_EARLY_RIVAL && GetRivalBattleFlags() & RIVAL_BATTLE_TUTORIAL)
+    //     gBattleTypeFlags |= BATTLE_TYPE_FIRST_BATTLE;
 
     if (CurrentBattlePyramidLocation() != PYRAMID_LOCATION_NONE)
     {
@@ -1427,6 +1427,11 @@ static void HandleBattleVariantEndParty(void)
     FlagClear(B_FLAG_SKY_BATTLE);
 }
 
+void BattleSetup_SetCBEndTrainerBattle(void)
+{
+    gMain.savedCallback = CB2_EndTrainerBattle;
+}
+
 static void CB2_EndTrainerBattle(void)
 {
     HandleBattleVariantEndParty();
@@ -1478,7 +1483,7 @@ static void CB2_EndTrainerBattle(void)
     }
     else if (IsPlayerDefeated(gBattleOutcome) == TRUE)
     {
-        if (CurrentBattlePyramidLocation() != PYRAMID_LOCATION_NONE || InTrainerHillChallenge() || (!NoAliveMonsForPlayer()) || FlagGet(B_FLAG_NO_WHITEOUT))
+        if (CurrentBattlePyramidLocation() != PYRAMID_LOCATION_NONE || InTrainerHillChallenge() || FlagGet(B_FLAG_NO_WHITEOUT))
             SetMainCallback2(CB2_ReturnToFieldContinueScriptPlayMapMusic);
         else
             SetMainCallback2(CB2_WhiteOut);
@@ -2061,6 +2066,8 @@ bool8 ShouldTryRematchBattle(void)
 
 bool8 ShouldTryRematchBattleForTrainerId(u16 trainerId)
 {
+    if (VarGet(VAR_FRONTIER_BATTLE_MODE) == NOT_FRONTIER_MODE_LINK_MULTIS)
+        return FALSE;
     if (IsFirstTrainerIdReadyForRematch(gRematchTable, trainerId))
         return TRUE;
 

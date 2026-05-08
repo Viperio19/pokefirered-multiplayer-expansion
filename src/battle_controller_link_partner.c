@@ -4,15 +4,19 @@
 #include "battle_controllers.h"
 #include "battle_interface.h"
 #include "battle_message.h"
+#include "battle_script_commands.h"
 #include "battle_setup.h"
 #include "battle_tower.h"
 #include "battle_tv.h"
 #include "bg.h"
 #include "data.h"
+#include "event_data.h"
 #include "frontier_util.h"
 #include "link.h"
+#include "load_save.h"
 #include "main.h"
 #include "m4a.h"
+#include "money.h"
 #include "palette.h"
 #include "pokeball.h"
 #include "pokemon.h"
@@ -63,7 +67,7 @@ static void (*const sLinkPartnerBufferCommands[CONTROLLER_CMDS_COUNT])(enum Batt
     [CONTROLLER_CHOOSEMOVE]               = BtlController_Empty,
     [CONTROLLER_OPENBAG]                  = BtlController_Empty,
     [CONTROLLER_CHOOSEPOKEMON]            = BtlController_Empty,
-    [CONTROLLER_23]                       = BtlController_Empty,
+    [CONTROLLER_FAINTLINKEDPOKEMON]       = BtlController_HandleFaintLinkedPokemon,
     [CONTROLLER_HEALTHBARUPDATE]          = BtlController_HandleHealthBarUpdate,
     [CONTROLLER_EXPUPDATE]                = BtlController_Empty,
     [CONTROLLER_STATUSICONUPDATE]         = BtlController_HandleStatusIconUpdate,
@@ -72,7 +76,7 @@ static void (*const sLinkPartnerBufferCommands[CONTROLLER_CMDS_COUNT])(enum Batt
     [CONTROLLER_DATATRANSFER]             = BtlController_Empty,
     [CONTROLLER_DMA3TRANSFER]             = BtlController_Empty,
     [CONTROLLER_PLAYBGM]                  = BtlController_Empty,
-    [CONTROLLER_32]                       = BtlController_Empty,
+    [CONTROLLER_SETFIELDSTATUS]           = BtlController_HandleSetFieldStatus,
     [CONTROLLER_TWORETURNVALUES]          = BtlController_Empty,
     [CONTROLLER_CHOSENMONRETURNVALUE]     = BtlController_Empty,
     [CONTROLLER_ONERETURNVALUE]           = BtlController_Empty,
@@ -93,6 +97,7 @@ static void (*const sLinkPartnerBufferCommands[CONTROLLER_CMDS_COUNT])(enum Batt
     [CONTROLLER_RESETACTIONMOVESELECTION] = BtlController_Empty,
     [CONTROLLER_ENDLINKBATTLE]            = LinkPartnerHandleEndLinkBattle,
     [CONTROLLER_DEBUGMENU]                = BtlController_Empty,
+    [CONTROLLER_SHOWABILITYPOPUP]         = BtlController_HandleShowAbilityPopUp,
     [CONTROLLER_TERMINATOR_NOP]           = BtlController_TerminatorNop
 };
 
@@ -177,8 +182,13 @@ static void LinkPartnerHandleLinkStandbyMsg(enum BattlerId battler)
     BtlController_Complete(battler);
 }
 
+static const u16 sWhiteOutBadgeMoney[9] = { 8, 16, 24, 36, 48, 64, 80, 100, 120 };
+
 static void LinkPartnerHandleEndLinkBattle(enum BattlerId battler)
 {
+    u32 money;
+    u8 partyLevel = 1;
+
     RecordedBattle_RecordAllBattlerData(&gBattleResources->bufferA[battler][4]);
     gBattleOutcome = gBattleResources->bufferA[battler][1];
     gSaveBlock2Ptr->frontier.disableRecordBattle = gBattleResources->bufferA[battler][2];
@@ -186,4 +196,43 @@ static void LinkPartnerHandleEndLinkBattle(enum BattlerId battler)
     BeginFastPaletteFade(3);
     BtlController_Complete(battler);
     gBattlerControllerFuncs[battler] = SetBattleEndCallbacks;
+
+    LoadPlayerPartyAfterLinkMultiBattle();
+
+    if (gBattleOutcome == B_OUTCOME_WON)
+    {
+        gBattleStruct->moneyMultiplier = 1;
+
+        money = GetTrainerMoneyToGive(TRAINER_BATTLE_PARAM.opponentA);
+        if (gBattleTypeFlags & BATTLE_TYPE_TWO_OPPONENTS)
+            money += GetTrainerMoneyToGive(TRAINER_BATTLE_PARAM.opponentB);
+        AddMoney(&gSaveBlock1Ptr->money, money);
+    }
+    else
+    {
+        if (B_WHITEOUT_MONEY <= GEN_3)
+        {
+            money = GetMoney(&gSaveBlock1Ptr->money) / 2;
+        }
+        else
+        {
+            s32 i, count;
+            for (i = 0; i < PARTY_SIZE; i++)
+            {
+                if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES_OR_EGG) != SPECIES_NONE
+                && GetMonData(&gPlayerParty[i], MON_DATA_SPECIES_OR_EGG) != SPECIES_EGG)
+                {
+                    if (GetMonData(&gPlayerParty[i], MON_DATA_LEVEL) > partyLevel)
+                        partyLevel = GetMonData(&gPlayerParty[i], MON_DATA_LEVEL);
+                }
+            }
+            for (count = 0, i = 0; i < ARRAY_COUNT(gBadgeFlags); i++)
+            {
+                if (FlagGet(gBadgeFlags[i]) == TRUE)
+                    ++count;
+            }
+            money = sWhiteOutBadgeMoney[count] * partyLevel;
+        }
+        RemoveMoney(&gSaveBlock1Ptr->money, money);
+    }
 }

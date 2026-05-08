@@ -58,6 +58,8 @@ static void BattleTowerNop2(void);
 static void LoadMultiPartnerCandidatesData(void);
 static void ShowPartnerCandidateMessage(void);
 static void LoadLinkMultiOpponentsData(void);
+static bool8 IsSameRivalBattle(void);
+static void LoadLinkMultiOpponentsDataFromVar(void);
 static void TowerTryCloseLink(void);
 static void SetMultiPartnerGfx(void);
 static void SetTowerInterviewData(void);
@@ -645,6 +647,7 @@ static void (* const sBattleTowerFuncs[])(void) =
     [BATTLE_TOWER_FUNC_TRY_CLOSE_LINK]      = TowerTryCloseLink,
     [BATTLE_TOWER_FUNC_SET_PARTNER_GFX]     = SetMultiPartnerGfx,
     [BATTLE_TOWER_FUNC_SET_INTERVIEW_DATA]  = SetTowerInterviewData,
+    [BATTLE_TOWER_FUNC_LOAD_VAR_OPPONENTS]  = LoadLinkMultiOpponentsDataFromVar,
 };
 
 static const u32 sWinStreakFlags[][2] =
@@ -672,21 +675,23 @@ static const u8 sApprenticeChallengeThreshold[MAX_APPRENTICE_QUESTIONS] =
 // Unclear why this was duplicated
 static const u8 sBattleTowerPartySizes2[] =
 {
-    [FRONTIER_MODE_SINGLES]     = FRONTIER_PARTY_SIZE,
-    [FRONTIER_MODE_DOUBLES]     = FRONTIER_DOUBLES_PARTY_SIZE,
-    [FRONTIER_MODE_MULTIS]      = FRONTIER_MULTI_PARTY_SIZE,
-    [FRONTIER_MODE_LINK_MULTIS] = FRONTIER_MULTI_PARTY_SIZE,
+    [FRONTIER_MODE_SINGLES]         = FRONTIER_PARTY_SIZE,
+    [FRONTIER_MODE_DOUBLES]         = FRONTIER_DOUBLES_PARTY_SIZE,
+    [FRONTIER_MODE_MULTIS]          = FRONTIER_MULTI_PARTY_SIZE,
+    [FRONTIER_MODE_LINK_MULTIS]     = FRONTIER_MULTI_PARTY_SIZE,
+    [NOT_FRONTIER_MODE_LINK_MULTIS] = FRONTIER_MULTI_PARTY_SIZE,
 };
 
 // Unknown, unused data
 static const u16 sUnused[] = { 179, 141, 200, 183 };
 
-static const u8 sBattleTowerPartySizes[FRONTIER_MODE_COUNT] =
+static const u8 sBattleTowerPartySizes[FRONTIER_MODE_COUNT + 1] =
 {
-    [FRONTIER_MODE_SINGLES]     = FRONTIER_PARTY_SIZE,
-    [FRONTIER_MODE_DOUBLES]     = FRONTIER_DOUBLES_PARTY_SIZE,
-    [FRONTIER_MODE_MULTIS]      = FRONTIER_MULTI_PARTY_SIZE,
-    [FRONTIER_MODE_LINK_MULTIS] = FRONTIER_MULTI_PARTY_SIZE,
+    [FRONTIER_MODE_SINGLES]         = FRONTIER_PARTY_SIZE,
+    [FRONTIER_MODE_DOUBLES]         = FRONTIER_DOUBLES_PARTY_SIZE,
+    [FRONTIER_MODE_MULTIS]          = FRONTIER_MULTI_PARTY_SIZE,
+    [FRONTIER_MODE_LINK_MULTIS]     = FRONTIER_MULTI_PARTY_SIZE,
+    [NOT_FRONTIER_MODE_LINK_MULTIS] = FRONTIER_MULTI_PARTY_SIZE,
 };
 
 static const u16 sRecordTrainerSpeechWon[] =
@@ -1551,6 +1556,90 @@ static void LoadLinkMultiOpponentsData(void)
         }
         break;
     case 6:
+        return;
+    }
+}
+
+static bool8 IsSameRivalBattle(void) {
+    u16 t1 = gBlockRecvBuffer[0][0];
+    u16 t2 = gBlockRecvBuffer[1][0];
+
+    if ((GetTrainerClassFromId(t1) == TRAINER_CLASS_RIVAL_EARLY_FRLG
+     || GetTrainerClassFromId(t1) == TRAINER_CLASS_RIVAL_LATE_FRLG
+     || GetTrainerClassFromId(t1) == TRAINER_CLASS_CHAMPION_FRLG)
+     && GetTrainerClassFromId(t1) == GetTrainerClassFromId(t2)
+     && abs(t1 - t2) < 3) {
+        return TRUE;
+     }
+
+    return FALSE;
+}
+
+static void LoadLinkMultiOpponentsDataFromVar(void)
+{
+    if (JOY_NEW(B_BUTTON) && gSpecialVar_Result < 7) {
+        gSpecialVar_Result = 8;
+    }
+
+    switch (gSpecialVar_Result)
+    {
+    case 0:
+        if (IsLinkTaskFinished())
+        {
+            SetLinkStandbyCallback();
+            gSpecialVar_Result = 1;
+        }
+        break;
+    case 1:
+        if (IsLinkTaskFinished())
+        {
+            SendBlock(BitmaskAllOtherLinkPlayers(), &TRAINER_BATTLE_PARAM.opponentA, sizeof(TRAINER_BATTLE_PARAM.opponentA));
+            gSpecialVar_Result = 2;
+        }
+        break;
+    case 2:
+        if ((GetBlockReceivedStatus() & 3) == 3)
+        {
+            ResetBlockReceivedFlags();
+            gSpecialVar_0x8009 = gBlockRecvBuffer[0][0] != gBlockRecvBuffer[1][0] && !IsSameRivalBattle();
+
+            if (gSpecialVar_0x8009)
+                gSpecialVar_Result = 7;
+            else
+                gSpecialVar_Result = 3;
+        }
+        break;
+    case 3:
+        if (IsLinkTaskFinished())
+        {
+            SendBlock(BitmaskAllOtherLinkPlayers(), &TRAINER_BATTLE_PARAM.opponentB, sizeof(TRAINER_BATTLE_PARAM.opponentB));
+            gSpecialVar_Result = 4;
+        }
+        break;
+    case 4:
+        if ((GetBlockReceivedStatus() & 3) == 3)
+        {
+            ResetBlockReceivedFlags();
+            gSpecialVar_0x8009 = gBlockRecvBuffer[0][0] != gBlockRecvBuffer[1][0];
+
+            if (gReceivedRemoteLinkPlayers && gWirelessCommType == 0)
+                gSpecialVar_Result = 5;
+            else
+                gSpecialVar_Result = 7;
+        }
+        break;
+    case 5:
+        SetCloseLinkCallback();
+        gSpecialVar_Result = 6;
+        break;
+    case 6:
+        if (gReceivedRemoteLinkPlayers == 0)
+        {
+            gSpecialVar_Result = 7;
+        }
+        break;
+    case 7:
+    default:
         return;
     }
 }

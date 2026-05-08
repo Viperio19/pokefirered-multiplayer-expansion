@@ -15,6 +15,7 @@
 #include "item.h"
 #include "item_menu.h"
 #include "link.h"
+#include "load_save.h"
 #include "main.h"
 #include "m4a.h"
 #include "palette.h"
@@ -59,7 +60,7 @@ static void PlayerHandleChooseAction(enum BattlerId battler);
 static void PlayerHandleYesNoBox(enum BattlerId battler);
 static void PlayerHandleChooseItem(enum BattlerId battler);
 static void PlayerHandleChoosePokemon(enum BattlerId battler);
-static void PlayerHandleCmd23(enum BattlerId battler);
+// static void PlayerHandleCmd23(enum BattlerId battler);
 static void PlayerHandleStatusXor(enum BattlerId battler);
 static void PlayerHandleDMA3Transfer(enum BattlerId battler);
 static void PlayerHandlePlayBGM(enum BattlerId battler);
@@ -120,7 +121,7 @@ static void (*const sPlayerBufferCommands[CONTROLLER_CMDS_COUNT])(enum BattlerId
     [CONTROLLER_CHOOSEMOVE]               = PlayerHandleChooseMove,
     [CONTROLLER_OPENBAG]                  = PlayerHandleChooseItem,
     [CONTROLLER_CHOOSEPOKEMON]            = PlayerHandleChoosePokemon,
-    [CONTROLLER_23]                       = PlayerHandleCmd23,
+    [CONTROLLER_FAINTLINKEDPOKEMON]       = BtlController_HandleFaintLinkedPokemon,
     [CONTROLLER_HEALTHBARUPDATE]          = BtlController_HandleHealthBarUpdate,
     [CONTROLLER_EXPUPDATE]                = PlayerHandleExpUpdate,
     [CONTROLLER_STATUSICONUPDATE]         = BtlController_HandleStatusIconUpdate,
@@ -129,7 +130,7 @@ static void (*const sPlayerBufferCommands[CONTROLLER_CMDS_COUNT])(enum BattlerId
     [CONTROLLER_DATATRANSFER]             = BtlController_Empty,
     [CONTROLLER_DMA3TRANSFER]             = PlayerHandleDMA3Transfer,
     [CONTROLLER_PLAYBGM]                  = PlayerHandlePlayBGM,
-    [CONTROLLER_32]                       = BtlController_Empty,
+    [CONTROLLER_SETFIELDSTATUS]           = BtlController_HandleSetFieldStatus,
     [CONTROLLER_TWORETURNVALUES]          = PlayerHandleTwoReturnValues,
     [CONTROLLER_CHOSENMONRETURNVALUE]     = PlayerHandleChosenMonReturnValue,
     [CONTROLLER_ONERETURNVALUE]           = PlayerHandleOneReturnValue,
@@ -150,6 +151,7 @@ static void (*const sPlayerBufferCommands[CONTROLLER_CMDS_COUNT])(enum BattlerId
     [CONTROLLER_RESETACTIONMOVESELECTION] = PlayerHandleResetActionMoveSelection,
     [CONTROLLER_ENDLINKBATTLE]            = PlayerHandleEndLinkBattle,
     [CONTROLLER_DEBUGMENU]                = PlayerHandleBattleDebug,
+    [CONTROLLER_SHOWABILITYPOPUP]         = BtlController_HandleShowAbilityPopUp,
     [CONTROLLER_TERMINATOR_NOP]           = BtlController_TerminatorNop
 };
 
@@ -410,7 +412,7 @@ static void HandleInputChooseAction(enum BattlerId battler)
 
 void HandleInputChooseTarget(enum BattlerId battler)
 {
-    enum BattlerId i;
+    s32 i;
     static const enum BattlerPosition identities[MAX_BATTLERS_COUNT] =
     {
         B_POSITION_PLAYER_LEFT,
@@ -729,6 +731,8 @@ void HandleInputChooseMove(enum BattlerId battler)
                 canSelectTarget = 1; // either selected or user
             if (moveTarget == TARGET_USER_OR_ALLY && IsBattlerAlive(BATTLE_PARTNER(battler)))
                 canSelectTarget = 1;
+            if (moveTarget == TARGET_FIELD)
+                canSelectTarget = 0;
 
             if (moveInfo->currentPp[gMoveSelectionCursor[battler]] == 0)
             {
@@ -1206,6 +1210,40 @@ void HandleMoveSwitching(enum BattlerId battler)
     }
 }
 
+static void SetMultiLinkBattleEndCallbacks(enum BattlerId battler)
+{
+    if (gWirelessCommType == 0)
+    {
+        if (gReceivedRemoteLinkPlayers == 0)
+        {
+            m4aSongNumStop(SE_LOW_HEALTH);
+            gMain.inBattle = FALSE;
+            gMain.callback1 = gPreBattleCallback1;
+            SetMainCallback2(gMain.savedCallback);
+            ResetSpriteData();
+            FreeAllWindowBuffers();
+            FreeMonSpritesGfx();
+            FreeBattleResources();
+            FreeBattleSpritesData();
+        }
+    }
+    else
+    {
+        if (IsLinkTaskFinished())
+        {
+            m4aSongNumStop(SE_LOW_HEALTH);
+            gMain.inBattle = FALSE;
+            gMain.callback1 = gPreBattleCallback1;
+            SetMainCallback2(gMain.savedCallback);
+            ResetSpriteData();
+            FreeAllWindowBuffers();
+            FreeMonSpritesGfx();
+            FreeBattleResources();
+            FreeBattleSpritesData();
+        }
+    }
+}
+
 static void SetLinkBattleEndCallbacks(enum BattlerId battler)
 {
     if (gWirelessCommType == 0)
@@ -1250,7 +1288,10 @@ void SetBattleEndCallbacks(enum BattlerId battler)
                 else
                     SetLinkStandbyCallback();
 
-                gBattlerControllerFuncs[battler] = SetLinkBattleEndCallbacks;
+                if (gBattleTypeFlags & BATTLE_TYPE_MULTIPLAYER)
+                    gBattlerControllerFuncs[battler] = SetMultiLinkBattleEndCallbacks;
+                else
+                    gBattlerControllerFuncs[battler] = SetLinkBattleEndCallbacks;
             }
         }
         else
@@ -2193,12 +2234,12 @@ static void PlayerHandleChoosePokemon(enum BattlerId battler)
     }
 }
 
-static void PlayerHandleCmd23(enum BattlerId battler)
-{
-    BattleStopLowHpSound();
-    BeginNormalPaletteFade(PALETTES_ALL, 2, 0, 16, RGB_BLACK);
-    BtlController_Complete(battler);
-}
+// static void PlayerHandleCmd23(enum BattlerId battler)
+// {
+//     BattleStopLowHpSound();
+//     BeginNormalPaletteFade(PALETTES_ALL, 2, 0, 16, RGB_BLACK);
+//     BtlController_Complete(battler);
+// }
 
 void PlayerHandleExpUpdate(enum BattlerId battler)
 {
@@ -2358,6 +2399,8 @@ static void PlayerHandleEndLinkBattle(enum BattlerId battler)
     BeginFastPaletteFade(3);
     BtlController_Complete(battler);
     gBattlerControllerFuncs[battler] = SetBattleEndCallbacks;
+
+    LoadPlayerPartyAfterLinkMultiBattle();
 }
 
 static void Controller_WaitForDebug(enum BattlerId battler)

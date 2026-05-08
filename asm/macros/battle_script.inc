@@ -2132,3 +2132,13 @@
 	.macro trywakebattlersuproar
 	callnative BS_TryWakeBattlersUproar
 	.endm
+
+	.macro tryfaintlinkedmon battler:req
+	callnative BS_TryFaintLinkedMon
+	.byte \battler
+	.endm
+
+	.macro setfieldstatus statusFlag:req
+	callnative BS_SetFieldStatus
+	.4byte \statusFlag
+	.endm

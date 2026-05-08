@@ -72,6 +72,12 @@
 	special CallBattleTowerFunc
 	.endm
 
+	@ Receives/loads the opponent data for a link multi challenge. Returns 6 when finished, and finishes immediately if not doing a link multi battle.
+	.macro tower_loadvaropponents
+	setvar VAR_0x8004, BATTLE_TOWER_FUNC_LOAD_VAR_OPPONENTS
+	special CallBattleTowerFunc
+	.endm
+
 	@ Attempts to close link connection. Used when finishing a link multi challenge.
 	.macro tower_closelink
 	setvar VAR_0x8004, BATTLE_TOWER_FUNC_TRY_CLOSE_LINK

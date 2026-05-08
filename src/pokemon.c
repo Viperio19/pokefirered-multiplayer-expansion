@@ -3402,6 +3402,9 @@ void CopyPartyMonToBattleData(enum BattlerId battler, u32 partyIndex)
 
 bool8 ExecuteTableBasedItemEffect(struct Pokemon *mon, enum Item item, u8 partyIndex, u8 moveIndex)
 {
+    if (gSaveBlock2Ptr->soullink && GetMonData(mon, MON_DATA_HP, NULL) == 0)
+        return TRUE;
+
     return PokemonUseItemEffects(mon, item, partyIndex, moveIndex, FALSE);
 }
 
@@ -5220,7 +5223,7 @@ u16 GetBattleBGM(void)
             return MUS_RG_VS_LEGEND;
         }
     }
-    else if (gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK))
+    else if (gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK) && !(gBattleTypeFlags & BATTLE_TYPE_MULTIPLAYER))
     {
         return MUS_VS_TRAINER;
     }

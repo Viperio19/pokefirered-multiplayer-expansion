@@ -2910,3 +2910,17 @@
 	getbraillestringwidth \text
 	call EventScript_BrailleCursorWaitButton
 	.endm
+
+	@ Sets the destination var to a random starter based on the given starter .
+	.macro setrandomstarter destination:req, value:req
+	.byte SCR_OP_SETRANDOMSTARTER
+	.2byte \destination
+	.2byte \value
+	.endm
+
+	@ Writes the category of the given Pokemon species to the specified buffer.
+	.macro bufferspeciescategory stringVarId:req, species:req
+	.byte SCR_OP_BUFFERSPECIESCATEGORY
+	stringvar \stringVarId
+	.2byte \species
+	.endm

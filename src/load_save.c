@@ -35,6 +35,7 @@ EWRAM_DATA struct SaveBlock3 gSaveblock3 = {};
 EWRAM_DATA struct SaveBlock2ASLR gSaveblock2 = {0};
 EWRAM_DATA struct SaveBlock1ASLR gSaveblock1 = {0};
 EWRAM_DATA struct PokemonStorageASLR gPokemonStorage = {0};
+EWRAM_DATA struct BoxPokemon gPokemonStorageBackupBoxes[TOTAL_BOXES_COUNT][IN_BOX_COUNT] = {0};
 
 EWRAM_DATA struct LoadedSaveData gLoadedSaveData = {0};
 EWRAM_DATA u32 gLastEncryptionKey = 0;
@@ -193,6 +194,105 @@ void LoadPlayerParty(void)
         SetBoxMonData(&gParties[B_TRAINER_0][i].box, MON_DATA_HP_LOST, &data);
         data = gParties[B_TRAINER_0][i].status;
         SetBoxMonData(&gParties[B_TRAINER_0][i].box, MON_DATA_STATUS, &data);
+    }
+}
+
+static bool8 IsPokemonInParty(struct Pokemon *party, struct Pokemon *mon)
+{
+    int i;
+    u32 personality = GetMonData(mon, MON_DATA_PERSONALITY, 0);
+
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        if (GetMonData(&party[i], MON_DATA_PERSONALITY, 0) == personality)
+            return TRUE;
+    }
+
+    return FALSE;
+}
+
+void LoadPlayerPartyAfterLinkMultiBattle(void) 
+{
+    int i = 0, slot = 0;
+
+    // Copy pokemon from slots [3-5] to [0-2] if first pokemon is not in stored party (player 2)
+    if (!IsPokemonInParty(gSaveBlock1Ptr->playerParty, &gPlayerParty[0]))
+    {
+        for (i = 0; i < PARTY_SIZE / 2; i++)
+            gPlayerParty[i] = gPlayerParty[i + PARTY_SIZE / 2];
+    }
+
+    // Get the first empty slot in slots [0-2]
+    while (slot < PARTY_SIZE / 2 && GetMonData(&gPlayerParty[slot], MON_DATA_SPECIES, 0) != SPECIES_NONE)
+    {
+        slot++;
+    }
+
+    // Copy pokemon from saved party (that aren't already in the current party) to the current party
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        struct Pokemon *mon = &gSaveBlock1Ptr->playerParty[i];
+
+        if (GetMonData(mon, MON_DATA_SPECIES, 0) == SPECIES_NONE)
+            break;
+
+        if (IsPokemonInParty(gPlayerParty, mon))
+            continue;
+
+        gPlayerParty[slot] = gSaveBlock1Ptr->playerParty[i];
+        slot++;
+    }
+
+    slot = PARTY_SIZE - 1;
+
+    // Clear the rest of the party
+    while (GetMonData(&gSaveBlock1Ptr->playerParty[slot], MON_DATA_SPECIES, 0) == SPECIES_NONE)
+    {
+        gPlayerParty[slot] = gSaveBlock1Ptr->playerParty[slot];
+        slot--;
+    }
+
+    gPlayerPartyCount = gSaveBlock1Ptr->playerPartyCount;
+}
+
+void LoadPartyItems(void)
+{
+    u8 i = 0, j = 0;
+    
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        for (j = 0; j < PARTY_SIZE; j++)
+        {
+            if (GetMonData(&gPlayerParty[i], MON_DATA_PERSONALITY) == GetMonData(&gSaveBlock1Ptr->playerParty[j], MON_DATA_PERSONALITY))
+            {
+                enum Item item = GetMonData(&gSaveBlock1Ptr->playerParty[j], MON_DATA_HELD_ITEM, 0);
+                SetMonData(&gPlayerParty[i], MON_DATA_HELD_ITEM, &item);
+            }
+        }
+    }
+}
+
+void SavePlayerBoxes(void)
+{
+    int i = 0, j = 0;
+
+    for (i = 0; i < TOTAL_BOXES_COUNT; i++)
+    {
+        if (CountMonsInBox(i) > 0)
+            AddBagItem(ITEM_POKE_BALL + i, CountMonsInBox(i));
+        for (j = 0; j < IN_BOX_COUNT; j++)
+            gPokemonStorageBackupBoxes[i][j] = gPokemonStoragePtr->boxes[i][j];
+    }
+}
+
+void LoadPlayerBoxes(void)
+{
+    int i = 0, j = 0;
+
+    for (i = 0; i < TOTAL_BOXES_COUNT; i++)
+    {
+        for (j = 0; j < IN_BOX_COUNT; j++)
+            gPokemonStoragePtr->boxes[i][j] = gPokemonStorageBackupBoxes[i][j];
     }
 }
 

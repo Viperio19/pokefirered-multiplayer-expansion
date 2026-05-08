@@ -51,6 +51,16 @@ EventScript_DoNoIntroTrainerBattle::
 	waitmovement 0
 	clearflag FLAG_SAFE_FOLLOWER_MOVEMENT
 	special PlayTrainerEncounterMusic
+	msgbox EventScript_Text_BattleWithOtherPlayer, MSGBOX_YESNO
+	switch VAR_RESULT
+	case YES, LinkMultiBattle_EventScript_TryNoIntroLinkMultiBattle
+	case NO, EventScript_InitiateNoIntroSoloBattle
+	case MULTI_B_PRESSED, EventScript_InitiateNoIntroSoloBattle
+
+EventScript_InitiateNoIntroSoloBattle::
+	message EventScript_Text_InitiatingSoloBattle
+	waitmessage
+EventScript_DoNoIntroSoloBattle::
 	dotrainerbattle
 	gotopostbattlescript
 
@@ -113,8 +123,15 @@ EventScript_ShowTrainerIntroMsg::
 	waitbuttonpress
 	special TryPrepareSecondApproachingTrainer
 	goto_if_eq VAR_RESULT, TRUE, EventScript_TrainerApproach
-	goto EventScript_DoTrainerBattle
+	msgbox EventScript_Text_BattleWithOtherPlayer, MSGBOX_YESNO
+	switch VAR_RESULT
+	case YES, LinkMultiBattle_EventScript_ChoosePokemon
+	case NO, EventScript_InitiateSoloBattle
+	case MULTI_B_PRESSED, EventScript_InitiateSoloBattle
 
+EventScript_InitiateSoloBattle::
+	message EventScript_Text_InitiatingSoloBattle
+	waitmessage
 EventScript_DoTrainerBattle::
 	dotrainerbattle
 	@ Below battle mode check only needed in FRLG
@@ -135,3 +152,10 @@ Std_MsgboxAutoclose::
 	waitbuttonpress
 	release
 	return
+
+EventScript_Text_BattleWithOtherPlayer:
+	.string "Do you want to battle together\n"
+	.string "with another player?$"
+
+EventScript_Text_InitiatingSoloBattle:
+	.string "Initiating solo battle.$"

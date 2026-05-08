@@ -3889,12 +3889,18 @@ static void CursorCb_SendMon(u8 taskId)
 
 static void CursorCb_Enter(u8 taskId)
 {
+    u8 aliveMons;
     u8 maxBattlers;
     u8 i;
 
     PartyMenuRemoveWindow(&sPartyMenuInternal->windowId[0]);
     PartyMenuRemoveWindow(&sPartyMenuInternal->windowId[1]);
     maxBattlers = GetMaxBattleEntries();
+    aliveMons = CountPartyAliveNonEggMonsExcept(PARTY_SIZE + 1);
+
+    if (aliveMons < maxBattlers)
+        maxBattlers = aliveMons;
+
     for (i = 0; i < maxBattlers; i++)
     {
         if (gSelectedOrderFromParty[i] == 0)
@@ -5842,7 +5848,8 @@ void ItemUseCB_RareCandy(u8 taskId, TaskFunc task)
         if (targetSpecies != SPECIES_NONE)
         {
             GetEvolutionTargetSpecies(mon, EVO_MODE_NORMAL, ITEM_NONE, NULL, &canStopEvo, DO_EVO);
-            RemoveBagItem(gSpecialVar_ItemId, 1);
+            if (gSpecialVar_ItemId != ITEM_RARER_CANDY)
+                RemoveBagItem(gSpecialVar_ItemId, 1);
             FreePartyPointers();
             gCB2_AfterEvolution = gPartyMenu.exitCallback;
             BeginEvolutionScene(mon, targetSpecies, canStopEvo, gPartyMenu.slotId);
@@ -5861,7 +5868,8 @@ void ItemUseCB_RareCandy(u8 taskId, TaskFunc task)
         sFinalLevel = GetMonData(mon, MON_DATA_LEVEL);
         gPartyMenuUseExitCallback = TRUE;
         UpdateMonDisplayInfoAfterRareCandy(gPartyMenu.slotId, mon);
-        RemoveBagItem(gSpecialVar_ItemId, 1);
+            if (gSpecialVar_ItemId != ITEM_RARER_CANDY)
+                RemoveBagItem(gSpecialVar_ItemId, 1);
         GetMonNickname(mon, gStringVar1);
         if (sFinalLevel > sInitialLevel)
         {
@@ -7438,7 +7446,9 @@ static const u8 *GetFacilityCancelString(void)
 {
     u8 facilityNum = VarGet(VAR_FRONTIER_FACILITY);
 
-    if (!(facilityNum != FACILITY_UNION_ROOM && facilityNum != FACILITY_MULTI_OR_EREADER))
+    if (VarGet(VAR_FRONTIER_BATTLE_MODE) == NOT_FRONTIER_MODE_LINK_MULTIS)
+        return gText_BattleAlone;
+    else if (!(facilityNum != FACILITY_UNION_ROOM && facilityNum != FACILITY_MULTI_OR_EREADER))
         return gText_CancelBattle;
     else if (facilityNum == FRONTIER_FACILITY_DOME && gSpecialVar_0x8005 == 2)
         return gText_ReturnToWaitingRoom;

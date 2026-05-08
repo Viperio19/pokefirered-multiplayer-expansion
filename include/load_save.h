@@ -35,6 +35,7 @@ extern bool32 gFlashMemoryPresent;
 extern struct SaveBlock1 *gSaveBlock1Ptr;
 extern struct SaveBlock2 *gSaveBlock2Ptr;
 extern struct PokemonStorage *gPokemonStoragePtr;
+extern struct BoxPokemon gPokemonStorageBackupBoxes[TOTAL_BOXES_COUNT][IN_BOX_COUNT];
 
 void CheckForFlashMemory(void);
 void ClearSav3(void);
@@ -49,6 +50,10 @@ void SetContinueGameWarpStatusToDynamicWarp(void);
 void ClearContinueGameWarpStatus2(void);
 void SavePlayerParty(void);
 void LoadPlayerParty(void);
+void LoadPlayerPartyAfterLinkMultiBattle(void);
+void LoadPartyItems(void);
+void SavePlayerBoxes(void);
+void LoadPlayerBoxes(void);
 void SaveObjectEvents(void);
 void LoadObjectEvents(void);
 void CopyPartyAndObjectsToSave(void);

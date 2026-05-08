@@ -90,7 +90,8 @@ bool32 BattlerIsRecorded(enum BattlerId battlerId)
 bool32 BattlerIsLink(enum BattlerId battlerId)
 {
     return (gBattlerBattleController[battlerId] == BATTLE_CONTROLLER_LINK_PARTNER
-         || gBattlerBattleController[battlerId] == BATTLE_CONTROLLER_LINK_OPPONENT);
+         || gBattlerBattleController[battlerId] == BATTLE_CONTROLLER_LINK_OPPONENT)
+         && !(gBattleTypeFlags & BATTLE_TYPE_MULTIPLAYER && BattlerIsOpponent(battlerId));
 }
 
 bool32 BattlerIsWally(enum BattlerId battlerId)
@@ -151,7 +152,7 @@ void SetUpBattleVarsAndBirchZigzagoon(void)
     BattleAI_SetupFlags();
 
     if (!IS_FRLG && gBattleTypeFlags & BATTLE_TYPE_FIRST_BATTLE)
-        CreateWildMon(SPECIES_ZIGZAGOON, 2);
+        CreateWildMon(SPECIES_ZIGZAGOON, 2, 2);
 }
 
 void InitBattleControllers(void)
@@ -204,7 +205,7 @@ static void InitBtlControllersInternal(void)
     else
         gBattlersCount = MAX_BATTLERS_COUNT;
 
-    if ((gBattleTypeFlags & BATTLE_TYPE_BATTLE_TOWER)
+    if ((gBattleTypeFlags & (BATTLE_TYPE_BATTLE_TOWER | BATTLE_TYPE_MULTIPLAYER))
         || !isMulti
         || (TESTING && isMulti)
         || (!isLink && !isRecorded)
@@ -660,7 +661,7 @@ static void Task_HandleSendLinkBuffersData(u8 taskId)
         }
         else
         {
-            if (gBattleTypeFlags & BATTLE_TYPE_BATTLE_TOWER)
+            if (gBattleTypeFlags & (BATTLE_TYPE_BATTLE_TOWER | BATTLE_TYPE_MULTIPLAYER))
                 numPlayers = 2;
             else
                 numPlayers = (gBattleTypeFlags & BATTLE_TYPE_MULTI) ? 4 : 2;
@@ -1117,13 +1118,14 @@ void BtlController_EmitChoosePokemon(enum BattlerId battler, u32 bufferId, u8 ca
     PrepareBufferDataTransfer(battler, bufferId, gBattleResources->transferBuffer, 9);  // Only 7 bytes were written.
 }
 
-static void UNUSED BtlController_EmitCmd23(enum BattlerId battler, u32 bufferId)
+void BtlController_EmitFaintLinkedPokemon(enum BattlerId battler, u32 bufferId, u32 personality)
 {
-    gBattleResources->transferBuffer[0] = CONTROLLER_23;
-    gBattleResources->transferBuffer[1] = CONTROLLER_23;
-    gBattleResources->transferBuffer[2] = CONTROLLER_23;
-    gBattleResources->transferBuffer[3] = CONTROLLER_23;
-    PrepareBufferDataTransfer(battler, bufferId, gBattleResources->transferBuffer, 4);
+    gBattleResources->transferBuffer[0] = CONTROLLER_FAINTLINKEDPOKEMON;
+    gBattleResources->transferBuffer[1] = personality;
+    gBattleResources->transferBuffer[2] = (personality & 0x0000FF00) >> 8;
+    gBattleResources->transferBuffer[3] = (personality & 0x00FF0000) >> 16;
+    gBattleResources->transferBuffer[4] = (personality & 0xFF000000) >> 24;
+    PrepareBufferDataTransfer(battler, bufferId, gBattleResources->transferBuffer, 5);
 }
 
 // why is the argument u16 if it's being cast to s16 anyway?
@@ -1219,16 +1221,14 @@ static void UNUSED BtlController_EmitPlayBGM(enum BattlerId battler, u32 bufferI
     PrepareBufferDataTransfer(battler, bufferId, gBattleResources->transferBuffer, songId + 3);
 }
 
-static void UNUSED BtlController_EmitCmd32(enum BattlerId battler, u32 bufferId, u16 size, void *data)
+void BtlController_EmitSetFieldStatus(enum BattlerId battler, u32 bufferId, u32 statusFlag)
 {
-    s32 i;
-
-    gBattleResources->transferBuffer[0] = CONTROLLER_32;
-    gBattleResources->transferBuffer[1] = size;
-    gBattleResources->transferBuffer[2] = (size & 0xFF00) >> 8;
-    for (i = 0; i < size; i++)
-        gBattleResources->transferBuffer[3 + i] = *(u8 *)(data++);
-    PrepareBufferDataTransfer(battler, bufferId, gBattleResources->transferBuffer, size + 3);
+    gBattleResources->transferBuffer[0] = CONTROLLER_SETFIELDSTATUS;
+    gBattleResources->transferBuffer[1] = statusFlag;
+    gBattleResources->transferBuffer[2] = (statusFlag & 0x0000FF00) >> 8;
+    gBattleResources->transferBuffer[3] = (statusFlag & 0x00FF0000) >> 16;
+    gBattleResources->transferBuffer[4] = (statusFlag & 0xFF000000) >> 24;
+    PrepareBufferDataTransfer(battler, bufferId, gBattleResources->transferBuffer, 5);
 }
 
 void BtlController_EmitTwoReturnValues(enum BattlerId battler, u32 bufferId, u8 ret8, u32 ret32)
@@ -1430,6 +1430,16 @@ void BtlController_EmitDebugMenu(enum BattlerId battler, u32 bufferId)
 {
     gBattleResources->transferBuffer[0] = CONTROLLER_DEBUGMENU;
     PrepareBufferDataTransfer(battler, bufferId, gBattleResources->transferBuffer, 1);
+}
+
+void BtlController_EmitShowAbilityPopUp(enum BattlerId battler, u32 bufferId)
+{
+    gBattleResources->transferBuffer[0] = CONTROLLER_SHOWABILITYPOPUP;
+    gBattleResources->transferBuffer[1] = gBattlerAbility;
+    gBattleResources->transferBuffer[2] = gBattleMons[gBattlerAbility].ability;
+    gBattleResources->transferBuffer[3] = (gBattleMons[gBattlerAbility].ability & 0xFF00) >> 8;
+    gBattleResources->transferBuffer[4] = IsDoubleBattle() != 0;
+    PrepareBufferDataTransfer(battler, bufferId, gBattleResources->transferBuffer, 5);
 }
 
 // Standardized Controller functions
@@ -2686,6 +2696,23 @@ void BtlController_HandlePrintStringPlayerOnly(enum BattlerId battler)
         BtlController_Complete(battler);
 }
 
+void BtlController_HandleFaintLinkedPokemon(enum BattlerId battler)
+{
+    u32 personality = gBattleResources->bufferA[battler][1] | (gBattleResources->bufferA[battler][2] << 8) | (gBattleResources->bufferA[battler][3] << 16) | (gBattleResources->bufferA[battler][4] << 24);
+
+    for (u8 i = 0; i < PARTY_SIZE; i++)
+    {
+        if (GetMonData(&gPlayerParty[i], MON_DATA_PERSONALITY, FALSE) == personality)
+        {
+            u16 zero = 0;
+            SetMonData(&gPlayerParty[i], MON_DATA_HP, &zero);
+            break;
+        }
+    }
+
+    BtlController_Complete(battler);
+}
+
 void BtlController_HandleHealthBarUpdate(enum BattlerId battler)
 {
     s32 maxHP, curHP;
@@ -2747,6 +2774,16 @@ void BtlController_HandleStatusAnimation(enum BattlerId battler)
                         gBattleResources->bufferA[battler][2] | (gBattleResources->bufferA[battler][3] << 8) | (gBattleResources->bufferA[battler][4] << 16) | (gBattleResources->bufferA[battler][5] << 24));
         gBattlerControllerFuncs[battler] = Controller_WaitForStatusAnimation;
     }
+}
+
+void BtlController_HandleSetFieldStatus(enum BattlerId battler)
+{
+    u32 statusFlag = gBattleResources->bufferA[battler][1] | (gBattleResources->bufferA[battler][2] << 8) | (gBattleResources->bufferA[battler][3] << 16) | (gBattleResources->bufferA[battler][4] << 24);
+
+    gFieldStatuses &= ~STATUS_FIELD_TERRAIN_ANY;
+    gFieldStatuses |= statusFlag;
+
+    BtlController_Complete(battler);
 }
 
 void BtlController_HandleHitAnimation(enum BattlerId battler)
@@ -2904,7 +2941,7 @@ static bool32 TwoMonsAtSendOut(enum BattlerId battler)
     }
     else
     {
-        if ((!TwoOpponentIntroMons(battler) || (gBattleTypeFlags & BATTLE_TYPE_MULTI)) && !BATTLE_TWO_VS_ONE_OPPONENT)
+        if ((!TwoOpponentIntroMons(battler) || (gBattleTypeFlags & BATTLE_TYPE_MULTI)) && !(gBattleTypeFlags & BATTLE_TYPE_MULTIPLAYER))
             return FALSE;
         else if ((gBattleTypeFlags & BATTLE_TYPE_TWO_OPPONENTS) || (BATTLE_TWO_VS_ONE_OPPONENT && !TwoOpponentIntroMons(battler)))
             return FALSE;
@@ -3035,6 +3072,16 @@ void BtlController_HandleBattleAnimation(enum BattlerId battler)
         if (ShouldUpdateTvData(battler))
             BattleTv_SetDataBasedOnAnimation(animationId);
     }
+}
+
+void BtlController_HandleShowAbilityPopUp(enum BattlerId battler)
+{
+    u8 abilityBattler = gBattleResources->bufferA[battler][1];
+    u16 ability = gBattleResources->bufferA[battler][2] | (gBattleResources->bufferA[battler][3] << 8);
+    bool8 isDoubleBattle = gBattleResources->bufferA[battler][4];
+
+    CreateAbilityPopUp(abilityBattler, ability, isDoubleBattle);
+    BtlController_Complete(battler);
 }
 
 void AnimateMonAfterPokeBallFail(enum BattlerId battler)

@@ -308,6 +308,7 @@ extern const u8 gText_RemoveMailBeforeItem[];
 extern const u8 gText_PkmnHoldingItemCantHoldMail[];
 extern const u8 gText_MailTransferredFromMailbox[];
 extern const u8 gText_CancelBattle[];
+extern const u8 gText_BattleAlone[];
 extern const u8 gText_ReturnToWaitingRoom[];
 extern const u8 gText_CancelChallenge[];
 extern const u8 gText_CantSwitchWithAlly[];

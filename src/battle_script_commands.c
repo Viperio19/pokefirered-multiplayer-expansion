@@ -3157,32 +3157,42 @@ void SetMoveEffect(enum BattlerId battlerAtk, enum BattlerId effectBattler, enum
     case MOVE_EFFECT_ELECTRIC_TERRAIN:
     case MOVE_EFFECT_PSYCHIC_TERRAIN:
     {
-        u32 statusFlag = 0;
         switch (moveEffect)
         {
-        case MOVE_EFFECT_MISTY_TERRAIN:
-            statusFlag = STATUS_FIELD_MISTY_TERRAIN;
-            gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_TERRAIN_SET_MISTY;
-            break;
-        case MOVE_EFFECT_GRASSY_TERRAIN:
-            statusFlag = STATUS_FIELD_GRASSY_TERRAIN;
-            gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_TERRAIN_SET_GRASSY;
-            break;
-        case MOVE_EFFECT_ELECTRIC_TERRAIN:
-            statusFlag = STATUS_FIELD_ELECTRIC_TERRAIN;
-            gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_TERRAIN_SET_ELECTRIC;
-            break;
-        case MOVE_EFFECT_PSYCHIC_TERRAIN:
-            statusFlag = STATUS_FIELD_PSYCHIC_TERRAIN;
-            gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_TERRAIN_SET_PSYCHIC;
-            break;
-        default:
-            break;
-        }
-        if (TryChangeBattleTerrain(battlerAtk, statusFlag))
-        {
-            BattleScriptPush(battleScript);
-            gBattlescriptCurrInstr = BattleScript_MoveEffectSetTerrain;
+            case MOVE_EFFECT_MISTY_TERRAIN:
+                gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_TERRAIN_SET_MISTY;
+                if (TryChangeBattleTerrain(gBattlerAttacker, STATUS_FIELD_MISTY_TERRAIN))
+                {
+                    BattleScriptPush(battleScript);
+                    gBattlescriptCurrInstr = BattleScript_MoveEffectSetMistyTerrain;
+                }
+                break;
+            case MOVE_EFFECT_GRASSY_TERRAIN:
+                gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_TERRAIN_SET_GRASSY;
+                if (TryChangeBattleTerrain(gBattlerAttacker, STATUS_FIELD_GRASSY_TERRAIN))
+                {
+                    BattleScriptPush(battleScript);
+                    gBattlescriptCurrInstr = BattleScript_MoveEffectSetGrassyTerrain;
+                }
+                break;
+            case MOVE_EFFECT_ELECTRIC_TERRAIN:
+                gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_TERRAIN_SET_ELECTRIC;
+                if (TryChangeBattleTerrain(gBattlerAttacker, STATUS_FIELD_ELECTRIC_TERRAIN))
+                {
+                    BattleScriptPush(battleScript);
+                    gBattlescriptCurrInstr = BattleScript_MoveEffectSetElectricTerrain;
+                }
+                break;
+            case MOVE_EFFECT_PSYCHIC_TERRAIN:
+                gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_TERRAIN_SET_PSYCHIC;
+                if (TryChangeBattleTerrain(gBattlerAttacker, STATUS_FIELD_PSYCHIC_TERRAIN))
+                {
+                    BattleScriptPush(battleScript);
+                    gBattlescriptCurrInstr = BattleScript_MoveEffectSetPsychicTerrain;
+                }
+                break;
+            default:
+                break;
         }
         break;
     }
@@ -4304,6 +4314,24 @@ bool32 NoAliveMonsForPlayer(void)
             maxIneligible = 3;
         else
             maxIneligible = 6;
+    }
+
+    if (gBattleTypeFlags & BATTLE_TYPE_MULTIPLAYER)
+    {
+        for (i = MULTI_PARTY_SIZE; i < PARTY_SIZE; i++)
+        {
+            if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) && !GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG)
+                && (!(gBattleTypeFlags & BATTLE_TYPE_ARENA) || !(gBattleStruct->arenaLostPlayerMons & (1u << i))))
+            {
+                HP_count += GetMonData(&gPlayerParty[i], MON_DATA_HP);
+            }
+        }
+
+        if (HP_count == 0)
+            return TRUE;
+
+        HP_count = 0;
+        maxIneligible = MULTI_PARTY_SIZE;
     }
 
     // Get total HP for the player's party to determine if the player has lost
@@ -5903,7 +5931,7 @@ static void Cmd_hitanimation(void)
     gBattlescriptCurrInstr = cmd->nextInstr;
 }
 
-static u32 GetTrainerMoneyToGive(u16 trainerId)
+u32 GetTrainerMoneyToGive(u16 trainerId)
 {
     u32 lastMonLevel = 0;
     u32 moneyReward;
@@ -5921,7 +5949,7 @@ static u32 GetTrainerMoneyToGive(u16 trainerId)
         lastMonLevel = party[GetTrainerPartySizeFromId(trainerId) - 1].lvl;
         trainerMoney = gTrainerClasses[GetTrainerClassFromId(trainerId)].money ?: 5;
 
-        if (gBattleTypeFlags & BATTLE_TYPE_TWO_OPPONENTS)
+        if (gBattleTypeFlags & BATTLE_TYPE_TWO_OPPONENTS || gBattleTypeFlags & BATTLE_TYPE_MULTIPLAYER)
             moneyReward = 4 * lastMonLevel * gBattleStruct->moneyMultiplier * trainerMoney;
         else if (IsDoubleBattle())
             moneyReward = 4 * lastMonLevel * gBattleStruct->moneyMultiplier * 2 * trainerMoney;
@@ -7425,7 +7453,8 @@ static void Cmd_forcerandomswitch(void)
         }
         else if ((gBattleTypeFlags & BATTLE_TYPE_BATTLE_TOWER && gBattleTypeFlags & BATTLE_TYPE_LINK)
             || (gBattleTypeFlags & BATTLE_TYPE_BATTLE_TOWER && gBattleTypeFlags & BATTLE_TYPE_RECORDED_LINK)
-            || (gBattleTypeFlags & BATTLE_TYPE_INGAME_PARTNER))
+            || (gBattleTypeFlags & BATTLE_TYPE_INGAME_PARTNER)
+            || (gBattleTypeFlags & BATTLE_TYPE_MULTIPLAYER))
         {
             if ((gBattlerTarget & BIT_FLANK) != B_FLANK_LEFT)
             {
@@ -7638,7 +7667,7 @@ static void Cmd_givepaydaymoney(void)
 {
     CMD_ARGS();
 
-    if (!(gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK)) && gPaydayMoney != 0)
+    if ((!(gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_RECORDED_LINK)) || gBattleTypeFlags & BATTLE_TYPE_MULTIPLAYER) && gPaydayMoney != 0)
     {
         u32 bonusMoney = gPaydayMoney * gBattleStruct->moneyMultiplier;
         AddMoney(&gSaveBlock1Ptr->money, bonusMoney);
@@ -13390,6 +13419,10 @@ void BS_ShowAbilityPopup(void)
 {
     NATIVE_ARGS();
     CreateAbilityPopUp(gBattlerAbility, gBattleMons[gBattlerAbility].ability, (IsDoubleBattle()) != 0);
+
+    BtlController_EmitShowAbilityPopUp(gBattlerAbility, B_COMM_TO_CONTROLLER);
+    MarkBattlerForControllerExec(gBattlerAbility);
+
     gBattlescriptCurrInstr = cmd->nextInstr;
 }
 
@@ -13586,6 +13619,54 @@ void BS_TryTrainerSlideMsgFirstOff(void)
     {
         gBattlescriptCurrInstr = cmd->nextInstr;
     }
+}
+
+void BS_TryFaintLinkedMon(void)
+{
+    NATIVE_ARGS(u8 battler);
+    enum BattlerId battler = GetBattlerForBattleScript(cmd->battler);
+
+    u8 metLocation = GetMonData(GetBattlerMon(battler), MON_DATA_MET_LOCATION, NULL);
+    u32 partner = BATTLE_PARTNER(battler);
+
+    bool32 fainted = FALSE;
+
+    if (gSaveBlock2Ptr->soullink
+     && gBattleTypeFlags & BATTLE_TYPE_MULTIPLAYER
+     && GetBattlerSide(battler) == B_SIDE_PLAYER)
+    {
+        if (metLocation == GetMonData(GetBattlerMon(partner), MON_DATA_MET_LOCATION, NULL) && IsBattlerAlive(partner))
+        {
+            fainted = TRUE;
+            gBattlerAttacker = partner;
+            gBattleStruct->passiveHpUpdate[gBattlerAttacker] = gBattleMons[gBattlerAttacker].hp;
+            BattleScriptPush(cmd->nextInstr);
+            gBattlescriptCurrInstr = BattleScript_LinkedPokemonFaintsOnScreen;
+        }
+        else
+        {
+            u8 i;
+            for (i = 0; i < PARTY_SIZE; i++)
+            {
+                if (i != gBattlerPartyIndexes[B_POSITION_PLAYER_LEFT] && i != gBattlerPartyIndexes[B_POSITION_PLAYER_RIGHT]
+                    && GetMonData(&gPlayerParty[i], MON_DATA_MET_LOCATION, FALSE) == metLocation
+                    && GetMonData(&gPlayerParty[i], MON_DATA_HP, FALSE) != 0)
+                {
+                    fainted = TRUE;
+                    BtlController_EmitFaintLinkedPokemon(gBattlerTarget, B_COMM_TO_CONTROLLER, GetMonData(&gPlayerParty[i], MON_DATA_PERSONALITY, FALSE));
+
+                    GetMonData(&gPlayerParty[i], MON_DATA_NICKNAME, gBattleTextBuff1);
+                    
+                    BattleScriptPush(cmd->nextInstr);
+                    gBattlescriptCurrInstr = BattleScript_LinkedPokemonFaintsOffScreen;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (!fainted)
+        gBattlescriptCurrInstr = cmd->nextInstr;
 }
 
 void BS_TryTrainerSlideMsgLastOn(void)
@@ -14148,3 +14229,16 @@ void BS_RestoreStatChangeQueue(void)
     gBattlescriptCurrInstr = cmd->nextInstr;
 }
 
+void BS_SetFieldStatus(void)
+{
+    NATIVE_ARGS(u32 statusFlag);
+    u32 statusFlag = cmd->statusFlag;
+
+    if (gBattleControllerExecFlags == 0)
+    {
+        BtlController_EmitSetFieldStatus(gBattlerAttacker, B_COMM_TO_CONTROLLER, statusFlag);
+        MarkBattlerForControllerExec(gBattlerAttacker);
+
+        gBattlescriptCurrInstr = cmd->nextInstr;
+    }
+}

@@ -1068,7 +1068,8 @@ PalletTown_ProfessorOaksLab_EventScript_BulbasaurBall::
 	lock
 	faceplayer
 	setvar PLAYER_STARTER_NUM, 0
-	setvar PLAYER_STARTER_SPECIES, SPECIES_BULBASAUR
+	@ setvar PLAYER_STARTER_SPECIES, SPECIES_BULBASAUR
+	setrandomstarter PLAYER_STARTER_SPECIES, 0
 	setvar RIVAL_STARTER_SPECIES, SPECIES_CHARMANDER
 	setvar RIVAL_STARTER_ID, LOCALID_CHARMANDER_BALL
 	goto_if_ge VAR_MAP_SCENE_PALLET_TOWN_PROFESSOR_OAKS_LAB, 3, PalletTown_ProfessorOaksLab_EventScript_LastPokeBall
@@ -1082,6 +1083,8 @@ PalletTown_ProfessorOaksLab_EventScript_ConfirmStarterChoice::
 	waitmovement 0
 	showmonpic PLAYER_STARTER_SPECIES, 10, 3
 	textcolor NPC_TEXT_COLOR_MALE
+	bufferspeciesname STR_VAR_1, PLAYER_STARTER_SPECIES
+	bufferspeciescategory STR_VAR_2, PLAYER_STARTER_SPECIES
 	goto_if_eq PLAYER_STARTER_NUM, 0, PalletTown_ProfessorOaksLab_EventScript_ConfirmBulbasaur
 	goto_if_eq PLAYER_STARTER_NUM, 1, PalletTown_ProfessorOaksLab_EventScript_ConfirmSquirtle
 	goto_if_eq PLAYER_STARTER_NUM, 2, PalletTown_ProfessorOaksLab_EventScript_ConfirmCharmander
@@ -1211,7 +1214,8 @@ PalletTown_ProfessorOaksLab_EventScript_SquirtleBall::
 	lock
 	faceplayer
 	setvar PLAYER_STARTER_NUM, 1
-	setvar PLAYER_STARTER_SPECIES, SPECIES_SQUIRTLE
+	@ setvar PLAYER_STARTER_SPECIES, SPECIES_SQUIRTLE
+	setrandomstarter PLAYER_STARTER_SPECIES, 2
 	setvar RIVAL_STARTER_SPECIES, SPECIES_BULBASAUR
 	setvar RIVAL_STARTER_ID, LOCALID_BULBASAUR_BALL
 	goto_if_ge VAR_MAP_SCENE_PALLET_TOWN_PROFESSOR_OAKS_LAB, 3, PalletTown_ProfessorOaksLab_EventScript_LastPokeBall
@@ -1224,7 +1228,8 @@ PalletTown_ProfessorOaksLab_EventScript_CharmanderBall::
 	lock
 	faceplayer
 	setvar PLAYER_STARTER_NUM, 2
-	setvar PLAYER_STARTER_SPECIES, SPECIES_CHARMANDER
+	@ setvar PLAYER_STARTER_SPECIES, SPECIES_CHARMANDER
+	setrandomstarter PLAYER_STARTER_SPECIES, 1
 	setvar RIVAL_STARTER_SPECIES, SPECIES_SQUIRTLE
 	setvar RIVAL_STARTER_ID, LOCALID_SQUIRTLE_BALL
 	goto_if_ge VAR_MAP_SCENE_PALLET_TOWN_PROFESSOR_OAKS_LAB, 3, PalletTown_ProfessorOaksLab_EventScript_LastPokeBall
@@ -1401,22 +1406,22 @@ PalletTown_ProfessorOaksLab_Text_OakHeyDontGoAwayYet::
 	.string "Don't go away yet!$"
 
 PalletTown_ProfessorOaksLab_Text_OakChoosingCharmander::
-	.string "Ah! CHARMANDER is your choice.\n"
-	.string "You should raise it patiently.\p"
-	.string "So, {PLAYER}, you're claiming the\n"
-	.string "FIRE POKéMON CHARMANDER?$"
+    .string "Ah! {STR_VAR_1} is your choice.\n"
+    .string "You should raise it patiently.\p"
+    .string "So, {PLAYER}, you're claiming the\n"
+    .string "{STR_VAR_2} {STR_VAR_1}?$"
 
 PalletTown_ProfessorOaksLab_Text_OakChoosingSquirtle::
-	.string "Hm! SQUIRTLE is your choice.\n"
-	.string "It's one worth raising.\p"
-	.string "So, {PLAYER}, you've decided on the\n"
-	.string "WATER POKéMON SQUIRTLE?$"
+    .string "Hm! {STR_VAR_1} is your choice.\n"
+    .string "It's one worth raising.\p"
+    .string "So, {PLAYER}, you've decided on the\n"
+    .string "{STR_VAR_2} {STR_VAR_1}?$"
 
 PalletTown_ProfessorOaksLab_Text_OakChoosingBulbasaur::
-	.string "I see! BULBASAUR is your choice.\n"
-	.string "It's very easy to raise.\p"
-	.string "So, {PLAYER}, you want to go with\n"
-	.string "the GRASS POKéMON BULBASAUR?$"
+    .string "I see! {STR_VAR_1} is your choice.\n"
+    .string "It's very easy to raise.\p"
+    .string "So, {PLAYER}, you want to go with\n"
+    .string "the {STR_VAR_2} {STR_VAR_1}?$"
 
 PalletTown_ProfessorOaksLab_Text_OakThisMonIsEnergetic::
 	.string "This POKéMON is really quite\n"

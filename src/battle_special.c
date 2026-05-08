@@ -15,6 +15,7 @@
 #include "string_util.h"
 #include "task.h"
 #include "text.h"
+#include "trainer_see.h"
 #include "constants/battle_frontier.h"
 #include "constants/battle_special.h"
 
@@ -64,9 +65,25 @@ static void Task_StartBattleAfterTransition(u8 taskId)
     if (IsBattleTransitionDone() == TRUE)
     {
         gMain.savedCallback = HandleSpecialTrainerBattleEnd;
+        if (gBattleTypeFlags & BATTLE_TYPE_MULTIPLAYER)
+            BattleSetup_SetCBEndTrainerBattle();
         SetMainCallback2(CB2_InitBattle);
         DestroyTask(taskId);
     }
+}
+
+void DoLinkMultiBattle(void)
+{
+    gBattleTypeFlags = BATTLE_TYPE_TRAINER | BATTLE_TYPE_DOUBLE | BATTLE_TYPE_LINK | BATTLE_TYPE_MULTI | BATTLE_TYPE_TOWER_LINK_MULTI | BATTLE_TYPE_MULTIPLAYER;
+
+    if (gNoOfApproachingTrainers == 2)
+        gBattleTypeFlags |= BATTLE_TYPE_TWO_OPPONENTS;
+    else
+        TRAINER_BATTLE_PARAM.opponentB = 0xFFFF;
+
+    CreateTask(Task_StartBattleAfterTransition, 1);
+    PlayMapChosenOrBattleBGM(0);
+    BattleTransition_StartOnField(GetTrainerBattleTransition());
 }
 
 void DoSpecialTrainerBattle(void)

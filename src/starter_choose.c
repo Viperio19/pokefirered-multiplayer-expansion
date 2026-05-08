@@ -1,4 +1,6 @@
 #include "global.h"
+#include "battle_main.h"
+#include "battle_util.h"
 #include "bg.h"
 #include "data.h"
 #include "decompress.h"
@@ -346,12 +348,46 @@ static const struct SpriteTemplate sSpriteTemplate_StarterCircle =
     .callback = SpriteCB_StarterPokemon
 };
 
+static bool32 CanEvolveTwice(u16 species)
+{
+    u32 i;
+    const struct Evolution *evolutions = GetSpeciesEvolutions(species);
+
+    if (evolutions != NULL)
+    {
+        for (i = 0; evolutions[i].method != EVOLUTIONS_END; i++)
+        {
+            if (evolutions[i].method
+             && SanitizeSpeciesId(evolutions[i].targetSpecies) != SPECIES_NONE
+             && CanEvolve(evolutions[i].targetSpecies))
+                return TRUE;
+        }
+    }
+    return FALSE;
+}
+
 // .text
 u16 GetStarterPokemon(u16 chosenStarterId)
 {
+    u16 species;
+
     if (chosenStarterId > STARTER_MON_COUNT)
         chosenStarterId = 0;
-    return sStarterMon[chosenStarterId];
+
+    species = sStarterMon[chosenStarterId];
+    
+    if (gSaveBlock2Ptr->randomizeStarterPkmn == OPTIONS_RANDOM_SPECIAL)
+    {
+        do
+        {
+            species = GetRandomSpecies(species, chosenStarterId, FALSE);
+            chosenStarterId++;
+        } while (!CanEvolveTwice(species));
+    }
+    else if (gSaveBlock2Ptr->randomizeStarterPkmn == OPTIONS_RANDOM_YES)
+        species = GetRandomSpecies(species, chosenStarterId, FALSE);
+
+    return species;
 }
 
 static void VblankCB_StarterChoose(void)
