@@ -897,7 +897,7 @@ static u8 GetBattleEnvironmentOverride(void)
         return BATTLE_ENVIRONMENT_FRONTIER;
     else if (gBattleTypeFlags & BATTLE_TYPE_LEGENDARY)
     {
-        switch (GetMonData(&gEnemyParty[0], MON_DATA_SPECIES))
+        switch (GetMonData(&gParties[B_TRAINER_1][0], MON_DATA_SPECIES))
         {
         case SPECIES_GROUDON:
             return BATTLE_ENVIRONMENT_GROUDON;
@@ -935,7 +935,7 @@ void BattleInitBgsAndWindows(void)
         SetBgTilemapBuffer(1, gBattleAnimBgTilemapBuffer);
         SetBgTilemapBuffer(2, gBattleAnimBgTilemapBuffer);
     }
-    else if (IS_FRLG && (gBattleTypeFlags == (BATTLE_TYPE_TRAINER | BATTLE_TYPE_FIRST_BATTLE) || gBattleTypeFlags == BATTLE_TYPE_CATCH_TUTORIAL))
+    else if (IS_FRLG && (gBattleTypeFlags & (BATTLE_TYPE_FIRST_BATTLE | BATTLE_TYPE_CATCH_TUTORIAL)))
     {
         gBattleScripting.windowsType = B_WIN_TYPE_KANTO_TUTORIAL;
     }

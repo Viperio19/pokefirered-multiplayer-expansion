@@ -149,9 +149,9 @@ static const u8 gText_OptionMenuSimilarBST[]      = _("{COLOR GREEN}{SHADOW LIGH
 static const u8 gText_OptionMenuRandomLegendary[] = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}LEGENDARY");
 static const u8 gText_OptionMenuThreeStage[]      = _("{COLOR GREEN}{SHADOW LIGHT_GREEN}3 STAGE");
 
-static const u16 sOptionMenuText_Pal[] = INCBIN_U16("graphics/interface/option_menu_text.gbapal");
+static const u16 sOptionMenuText_Pal[] = INCGFX_U16("graphics/interface/option_menu_text.pal", ".gbapal");
 // note: this is only used in the Japanese release
-static const u8 sEqualSignGfx[] = INCBIN_U8("graphics/interface/option_menu_equals_sign.4bpp");
+static const u8 sEqualSignGfx[] = INCGFX_U8("graphics/interface/option_menu_equals_sign.png", ".4bpp");
 
 static const u8 *const sOptionMenuItemsNames[MENUITEM_COUNT] =
 {
