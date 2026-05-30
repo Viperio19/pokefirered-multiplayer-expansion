@@ -2702,10 +2702,17 @@ void BtlController_HandleFaintLinkedPokemon(enum BattlerId battler)
 
     for (u8 i = 0; i < PARTY_SIZE; i++)
     {
-        if (GetMonData(&gPlayerParty[i], MON_DATA_PERSONALITY, FALSE) == personality)
+        if (GetMonData(&gParties[B_TRAINER_0][i], MON_DATA_PERSONALITY, FALSE) == personality)
         {
             u16 zero = 0;
-            SetMonData(&gPlayerParty[i], MON_DATA_HP, &zero);
+            SetMonData(&gParties[B_TRAINER_0][i], MON_DATA_HP, &zero);
+            break;
+        }
+
+        if (GetMonData(&gParties[B_TRAINER_2][i], MON_DATA_PERSONALITY, FALSE) == personality)
+        {
+            u16 zero = 0;
+            SetMonData(&gParties[B_TRAINER_2][i], MON_DATA_HP, &zero);
             break;
         }
     }
@@ -3357,7 +3364,7 @@ enum BattleTrainer GetBattlerTrainer(enum BattlerId battler)
         case BATTLE_CONTROLLER_LINK_OPPONENT:
         case BATTLE_CONTROLLER_RECORDED_OPPONENT:
         case BATTLE_CONTROLLER_OPPONENT:
-            return (battler & BIT_FLANK) ? B_TRAINER_3 : B_TRAINER_1;
+            return (!BATTLE_TYPE_MULTIPLAYER_2_VS_1 && (battler & BIT_FLANK)) ? B_TRAINER_3 : B_TRAINER_1;
         default:
             break;
         }
@@ -3376,7 +3383,7 @@ bool32 BattleSideHasTwoTrainers(enum BattleSide side)
     if (side == B_SIDE_PLAYER)
         return gBattleTypeFlags & BATTLE_TYPE_MULTI;
     else
-        return ((gBattleTypeFlags & BATTLE_TYPE_TWO_OPPONENTS && TRAINER_BATTLE_PARAM.opponentB != 0xFFFF) || (gBattleTypeFlags & BATTLE_TYPE_LINK && gBattleTypeFlags & BATTLE_TYPE_MULTI));
+        return !BATTLE_TWO_VS_ONE_OPPONENT && ((gBattleTypeFlags & BATTLE_TYPE_TWO_OPPONENTS && TRAINER_BATTLE_PARAM.opponentB != 0xFFFF) || (gBattleTypeFlags & BATTLE_TYPE_LINK && gBattleTypeFlags & BATTLE_TYPE_MULTI));
 }
 
 bool32 BattlersShareParty(enum BattlerId battler1, enum BattlerId battler2)

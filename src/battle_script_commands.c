@@ -4318,20 +4318,16 @@ bool32 NoAliveMonsForPlayer(void)
 
     if (gBattleTypeFlags & BATTLE_TYPE_MULTIPLAYER)
     {
-        for (i = MULTI_PARTY_SIZE; i < PARTY_SIZE; i++)
+        for (i = 0; i < maxIneligible; i++)
         {
-            if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) && !GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG)
-                && (!(gBattleTypeFlags & BATTLE_TYPE_ARENA) || !(gBattleStruct->arenaLostPlayerMons & (1u << i))))
-            {
-                HP_count += GetMonData(&gPlayerParty[i], MON_DATA_HP);
-            }
+            if (GetMonData(&gParties[B_TRAINER_2][i], MON_DATA_SPECIES) && !GetMonData(&gParties[B_TRAINER_2][i], MON_DATA_IS_EGG))
+                HP_count += GetMonData(&gParties[B_TRAINER_2][i], MON_DATA_HP);
         }
 
         if (HP_count == 0)
             return TRUE;
 
         HP_count = 0;
-        maxIneligible = MULTI_PARTY_SIZE;
     }
 
     // Get total HP for the player's party to determine if the player has lost
@@ -13645,17 +13641,30 @@ void BS_TryFaintLinkedMon(void)
         }
         else
         {
-            u8 i;
-            for (i = 0; i < PARTY_SIZE; i++)
+            for (u8 i = 0; i < PARTY_SIZE; i++)
             {
                 if (i != gBattlerPartyIndexes[B_POSITION_PLAYER_LEFT] && i != gBattlerPartyIndexes[B_POSITION_PLAYER_RIGHT]
-                    && GetMonData(&gPlayerParty[i], MON_DATA_MET_LOCATION, FALSE) == metLocation
-                    && GetMonData(&gPlayerParty[i], MON_DATA_HP, FALSE) != 0)
+                    && GetMonData(&gParties[B_TRAINER_0][i], MON_DATA_MET_LOCATION, FALSE) == metLocation
+                    && GetMonData(&gParties[B_TRAINER_0][i], MON_DATA_HP, FALSE) != 0)
                 {
                     fainted = TRUE;
-                    BtlController_EmitFaintLinkedPokemon(gBattlerTarget, B_COMM_TO_CONTROLLER, GetMonData(&gPlayerParty[i], MON_DATA_PERSONALITY, FALSE));
+                    BtlController_EmitFaintLinkedPokemon(gBattlerTarget, B_COMM_TO_CONTROLLER, GetMonData(&gParties[B_TRAINER_0][i], MON_DATA_PERSONALITY, FALSE));
 
-                    GetMonData(&gPlayerParty[i], MON_DATA_NICKNAME, gBattleTextBuff1);
+                    GetMonData(&gParties[B_TRAINER_0][i], MON_DATA_NICKNAME, gBattleTextBuff1);
+                    
+                    BattleScriptPush(cmd->nextInstr);
+                    gBattlescriptCurrInstr = BattleScript_LinkedPokemonFaintsOffScreen;
+                    break;
+                }
+
+                if (i != gBattlerPartyIndexes[B_POSITION_PLAYER_LEFT] && i != gBattlerPartyIndexes[B_POSITION_PLAYER_RIGHT]
+                    && GetMonData(&gParties[B_TRAINER_2][i], MON_DATA_MET_LOCATION, FALSE) == metLocation
+                    && GetMonData(&gParties[B_TRAINER_2][i], MON_DATA_HP, FALSE) != 0)
+                {
+                    fainted = TRUE;
+                    BtlController_EmitFaintLinkedPokemon(gBattlerTarget, B_COMM_TO_CONTROLLER, GetMonData(&gParties[B_TRAINER_2][i], MON_DATA_PERSONALITY, FALSE));
+
+                    GetMonData(&gParties[B_TRAINER_2][i], MON_DATA_NICKNAME, gBattleTextBuff1);
                     
                     BattleScriptPush(cmd->nextInstr);
                     gBattlescriptCurrInstr = BattleScript_LinkedPokemonFaintsOffScreen;
