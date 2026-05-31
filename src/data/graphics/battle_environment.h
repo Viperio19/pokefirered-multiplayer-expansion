@@ -40,6 +40,8 @@ const u16 gBattleEnvironmentPalette_BuildingGym[] = INCGFX_U16("graphics/battle_
 const u16 gBattleEnvironmentPalette_BuildingLeader[] = INCGFX_U16("graphics/battle_environment_frlg/indoor/leader.pal", ".gbapal");
 const u16 gBattleEnvironmentPalette_Plain[] = INCGFX_U16("graphics/battle_environment_frlg/indoor/plain.pal", ".gbapal");
 
+const u16 gBattleEnvironmentPalette_Frontier[] = INCGFX_U16("graphics/battle_environment_frlg/building/terrain.pal", ".gbapal"); // this is also used for link battles
+
 #else
 
 const u32 gBattleEnvironmentTiles_TallGrass[] = INCGFX_U32("graphics/battle_environment/tall_grass/tiles.png", ".4bpp.smol");
@@ -82,6 +84,8 @@ const u16 gBattleEnvironmentPalette_BuildingGym[] = INCGFX_U16("graphics/battle_
 const u16 gBattleEnvironmentPalette_BuildingLeader[] = INCGFX_U16("graphics/battle_environment/building/leader.pal", ".gbapal");
 const u16 gBattleEnvironmentPalette_Plain[] = INCGFX_U16("graphics/battle_environment/plain/palette.pal", ".gbapal");
 
+const u16 gBattleEnvironmentPalette_Frontier[] = INCGFX_U16("graphics/battle_environment/stadium/battle_frontier.pal", ".gbapal"); // this is also used for link battles
+
 #endif
 
 const u16 gBattleEnvironmentPalette_Lorelei[] = INCGFX_U16("graphics/battle_environment_frlg/indoor/lorelei.pal", ".gbapal");
@@ -92,7 +96,6 @@ const u16 gBattleEnvironmentPalette_Lance[] = INCGFX_U16("graphics/battle_enviro
 const u32 gBattleEnvironmentTiles_Stadium[] = INCGFX_U32("graphics/battle_environment/stadium/tiles.png", ".4bpp.smol");
 const u32 gBattleEnvironmentTilemap_Stadium[] = INCBIN_U32("graphics/battle_environment/stadium/map.bin.smolTM");
 
-const u16 gBattleEnvironmentPalette_Frontier[] = INCGFX_U16("graphics/battle_environment/stadium/battle_frontier.pal", ".gbapal"); // this is also used for link battles
 const u16 gBattleEnvironmentPalette_StadiumAqua[] = INCGFX_U16("graphics/battle_environment/stadium/aqua.pal", ".gbapal");
 const u16 gBattleEnvironmentPalette_StadiumMagma[] = INCGFX_U16("graphics/battle_environment/stadium/magma.pal", ".gbapal");
 const u16 gBattleEnvironmentPalette_StadiumSidney[] = INCGFX_U16("graphics/battle_environment/stadium/sidney.pal", ".gbapal");

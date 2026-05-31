@@ -2176,11 +2176,13 @@ static void Controller_HandleTrainerSlideBack(enum BattlerId battler)
 void Controller_WaitForHealthBar(enum BattlerId battler)
 {
     s16 hpValue = MoveBattleBar(battler, gHealthboxSpriteIds[battler], HEALTH_BAR, 0);
+    struct Pokemon *mon = GetBattlerMon(battler);
+    s32 maxHP = GetMonData(mon, MON_DATA_MAX_HP);   
 
     SetHealthboxSpriteVisible(gHealthboxSpriteIds[battler]);
     if (hpValue != -1)
     {
-        UpdateHpTextInHealthbox(gHealthboxSpriteIds[battler], HP_CURRENT, hpValue, gBattleMons[battler].maxHP);
+        UpdateHpTextInHealthbox(gHealthboxSpriteIds[battler], HP_CURRENT, hpValue, maxHP);
     }
     else
     {
@@ -3351,7 +3353,7 @@ void FreeShinyStars(void)
 
 enum BattleTrainer GetBattlerTrainer(enum BattlerId battler)
 {
-    if (gBattleTypeFlags & BATTLE_TYPE_LINK && gBattleTypeFlags & BATTLE_TYPE_MULTI)
+    if (gBattleTypeFlags & BATTLE_TYPE_LINK)
     {
         switch (gBattlerBattleController[battler])
         {
@@ -3364,7 +3366,9 @@ enum BattleTrainer GetBattlerTrainer(enum BattlerId battler)
         case BATTLE_CONTROLLER_LINK_OPPONENT:
         case BATTLE_CONTROLLER_RECORDED_OPPONENT:
         case BATTLE_CONTROLLER_OPPONENT:
-            return (!BATTLE_TYPE_MULTIPLAYER_2_VS_1 && (battler & BIT_FLANK)) ? B_TRAINER_3 : B_TRAINER_1;
+            if (gBattleTypeFlags & BATTLE_TYPE_MULTI)
+                return (!BATTLE_TYPE_MULTIPLAYER_2_VS_1 && (battler & BIT_FLANK)) ? B_TRAINER_3 : B_TRAINER_1;
+            return B_TRAINER_1;
         default:
             break;
         }
